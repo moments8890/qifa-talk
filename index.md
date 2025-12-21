@@ -7,13 +7,14 @@ permalink: /
 
 # 西雅图 · 启发说
 
-**⏰ 每周三晚上9点在群里报名周末的接龙！**
+{: .important }
+> **⏰ 每周三晚上9点在群里报名周末的接龙！**
 
 {: .important-title }
 > **话题池（可投票或增加新话题）**
 >
-> 大家可以给感兴趣的话题投票，也可以在选项里增加你感兴趣的话题（点other然后vote）
-> 👇 [“启发说”话题候选池 - StrawPoll](https://strawpoll.com/e2naXbvpVyB)
+> 大家可以给感兴趣的话题投票，也可以在选项里增加你感兴趣的话题（点other然后vote）👇
+> [“启发说”话题候选池 - StrawPoll](https://strawpoll.com/e2naXbvpVyB)
 
 {: .important-title }
 > **辩论局流程（需前做功课）**
@@ -25,6 +26,20 @@ permalink: /
 > * 💭 一方可以发起对辩 1v1，每人总共3分钟
 > * 💭 评论员分享观察&观点
 > * 💭 轻松Debrief 讨论：有哪些时刻惊艳到你？有哪些想要补充？
+
+## 🔥 最新活动 (Next Event)
+
+{% assign next_event = site.pages | where: "parent", "Upcoming Events" | sort: "nav_order" | first %}
+
+{% if next_event %}
+### [{{ next_event.title }}]({{ next_event.url | relative_url }})
+
+{{ next_event.content | markdownify }}
+{% else %}
+*暂无即将开始的活动。*
+{% endif %}
+
+---
 
 ## 活动导航
 
