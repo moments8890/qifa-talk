@@ -13,7 +13,7 @@ permalink: /upcoming/
 
 ## 🔥 最新活动 (Next Event)
 
-{% assign next_event = site.pages | where: "parent", "Upcoming Events" | sort: "nav_order" | first %}
+{% assign next_event = site.pages | where: "parent", "即将开始" | sort: "nav_order" | first %}
 
 {% if next_event %}
 ### [{{ next_event.title }}]({{ next_event.url | relative_url }})
