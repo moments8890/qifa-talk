@@ -16,8 +16,3 @@ permalink: /qifa-talk/past/
 
 1. TOC
 {:toc}
-
-{% assign children = site.pages | where: "parent", "Past Events" | sort: "nav_order" %}
-{% for child in children %}
-## [{{ child.title }}]({{ child.url | relative_url }})
-{% endfor %}

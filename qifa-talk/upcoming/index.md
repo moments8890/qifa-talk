@@ -29,11 +29,3 @@ permalink: /qifa-talk/upcoming/
 
 ## Table of contents
 {: .no_toc .text-delta }
-
-1. TOC
-{:toc}
-
-{% assign children = site.pages | where: "parent", "Upcoming Events" | sort: "nav_order" %}
-{% for child in children %}
-## [{{ child.title }}]({{ child.url | relative_url }})
-{% endfor %}
