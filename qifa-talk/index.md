@@ -16,3 +16,17 @@ permalink: /qifa-talk/
   * 查看最近的辩论与讨论活动安排。
 * [**📅 Past Events (往期回顾)**](past/)
   * 浏览过去举办的精彩活动记录。
+
+---
+
+## 🔥 最新活动 (Next Event)
+
+{% assign next_event = site.pages | where: "parent", "Upcoming Events" | sort: "nav_order" | first %}
+
+{% if next_event %}
+### [{{ next_event.title }}]({{ next_event.url | relative_url }})
+
+{{ next_event.content | markdownify }}
+{% else %}
+*暂无即将开始的活动。*
+{% endif %}
