@@ -1,5 +1,6 @@
-theme: just-the-docs
-# remote_theme: just-the-docs/just-the-docs (Commented out for local dev)
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
 
 title: 西雅图 · 启发说
 description: 每周三晚上9点在群里报名周末的接龙！
