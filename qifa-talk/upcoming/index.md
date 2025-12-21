@@ -4,7 +4,7 @@ title: 即将开始
 parent: 启发说
 nav_order: 1
 has_children: true
-permalink: /qifa-talk/upcoming/
+permalink: /upcoming/
 ---
 
 # 🙌 Upcoming Events (即将开始)
@@ -26,6 +26,3 @@ permalink: /qifa-talk/upcoming/
 ---
 
 ## 更多活动 (More Events)
-
-## Table of contents
-{: .no_toc .text-delta }
