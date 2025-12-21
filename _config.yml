@@ -1,5 +1,4 @@
-theme: jekyll-theme-cayman
+remote_theme: just-the-docs/just-the-docs
 title: 西雅图 · 启发说
 description: 每周三晚上9点在群里报名周末的接龙！
-show_downloads: false
-google_analytics: 
+search_enabled: false
