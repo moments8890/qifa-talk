@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title and page.title != site.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+                   "Microsoft YaHei", "Source Han Sans SC", "Helvetica Neue", sans-serif;
+    }
+    .prose h1 { font-size: 1.9rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #1e1b4b; }
+    .prose h2 { font-size: 1.4rem; font-weight: 600; margin: 1.75rem 0 0.6rem; color: #3730a3; border-bottom: 2px solid #e0e7ff; padding-bottom: 0.3rem; }
+    .prose h3 { font-size: 1.15rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #4338ca; }
+    .prose p { margin-bottom: 1rem; line-height: 1.85; color: #374151; }
+    .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+    .prose li { margin-bottom: 0.4rem; line-height: 1.75; color: #374151; }
+    .prose a { color: #4f46e5; text-decoration: underline; }
+    .prose a:hover { color: #3730a3; }
+    .prose strong { font-weight: 700; color: #1f2937; }
+    .prose blockquote {
+      border-left: 4px solid #a5b4fc;
+      padding: 0.85rem 1.1rem;
+      margin: 1rem 0;
+      background: #f5f3ff;
+      border-radius: 0 0.6rem 0.6rem 0;
+      color: #374151;
+    }
+    .prose blockquote.important,
+    .prose blockquote.important-title { border-left-color: #7c3aed; background: #ede9fe; }
+    .prose blockquote.note,
+    .prose blockquote.note-title { border-left-color: #2563eb; background: #eff6ff; }
+    .prose blockquote.warning { border-left-color: #dc2626; background: #fef2f2; }
+    .prose blockquote p { margin-bottom: 0.4rem; color: inherit; }
+    .prose blockquote p:last-child { margin-bottom: 0; }
+    .prose blockquote ul, .prose blockquote ol { margin-bottom: 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; font-size: 0.95rem; display: block; overflow-x: auto; }
+    .prose th { background: #eef2ff; border: 1px solid #c7d2fe; padding: 0.6rem 0.85rem; text-align: left; font-weight: 600; }
+    .prose td { border: 1px solid #e5e7eb; padding: 0.6rem 0.85rem; }
+    .prose tr:nth-child(even) td { background: #f9fafb; }
+    .prose hr { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
+    .prose img { max-width: 100%; height: auto; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 1rem 0; }
+    .prose code { background: #f3f4f6; padding: 0.15rem 0.4rem; border-radius: 0.3rem; font-size: 0.85rem; font-family: monospace; color: #4f46e5; }
+    .card-btn {
+      display: block;
+      background: #fff;
+      border: 1px solid #e0e7ff;
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-decoration: none !important;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+      color: inherit;
+    }
+    .card-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(79,70,229,0.12);
+      border-color: #818cf8;
+    }
+    /* Event page two-column layout */
+    .event-layout { display: flex; flex-direction: column; gap: 20px; }
+    .event-img-col img { width: 100%; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: block; }
+    @media (min-width: 640px) {
+      .event-layout { flex-direction: row; align-items: flex-start; gap: 28px; }
+      .event-text-col { flex: 1; min-width: 0; }
+      .event-img-col { width: 45%; flex-shrink: 0; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col text-gray-800">
+
+  <!-- Navigation -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="flex justify-between items-center h-14">
+        <a href="{{ '/' | relative_url }}" class="text-lg font-bold text-indigo-700 tracking-wide hover:text-indigo-500 transition-colors">
+          🌟 启发说
+        </a>
+        <div class="hidden md:flex items-center gap-5 text-sm font-medium text-gray-600">
+          <a href="{{ '/' | relative_url }}" class="hover:text-indigo-600 transition-colors">首页</a>
+          <a href="{{ '/upcoming/' | relative_url }}" class="hover:text-indigo-600 transition-colors">即将开始</a>
+          <a href="{{ '/past/' | relative_url }}" class="hover:text-indigo-600 transition-colors">往期活动</a>
+          <a href="{{ '/about/' | relative_url }}" class="hover:text-indigo-600 transition-colors">关于我们</a>
+        </div>
+        <button id="menu-btn" class="md:hidden p-1 rounded text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="菜单">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="mobile-nav" class="hidden pb-4 md:hidden border-t border-gray-100 pt-2 space-y-1">
+        <a href="{{ '/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">🏠 首页</a>
+        <a href="{{ '/upcoming/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">🙌 即将开始</a>
+        <a href="{{ '/past/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">📅 往期活动</a>
+        <a href="{{ '/about/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">💡 关于我们</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  {% if page.permalink != "/" %}
+  <div class="bg-white border-b border-gray-100">
+    <div class="max-w-3xl mx-auto px-4 py-2 text-sm text-gray-400">
+      <a href="{{ '/' | relative_url }}" class="hover:text-indigo-500">首页</a>
+      {% if page.parent %}
+        <span class="mx-1">›</span>
+        {% if page.parent == "往期活动" %}
+          <a href="{{ '/past/' | relative_url }}" class="hover:text-indigo-500">{{ page.parent }}</a>
+        {% elsif page.parent == "即将开始" %}
+          <a href="{{ '/upcoming/' | relative_url }}" class="hover:text-indigo-500">{{ page.parent }}</a>
+        {% else %}
+          <span>{{ page.parent }}</span>
+        {% endif %}
+      {% endif %}
+      {% if page.title %}<span class="mx-1">›</span><span class="text-gray-600">{{ page.title }}</span>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main content -->
+  <main class="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
+    {% if page.image %}
+    <div class="event-layout">
+      <div class="event-text-col prose">{{ content }}</div>
+      <div class="event-img-col">
+        <img src="{{ page.image }}" alt="{{ page.title }}" onerror="this.parentElement.style.display='none'">
+      </div>
+    </div>
+    {% else %}
+    <article class="prose">
+      {{ content }}
+    </article>
+    {% endif %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 py-8 mt-8">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-indigo-700 font-semibold text-lg mb-1">🌟 西雅图 · 启发说</p>
+      <p class="text-sm text-gray-400">启发思维，共话未来 · 非营利性华人社群</p>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('menu-btn');
+    const nav = document.getElementById('mobile-nav');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+    btn.addEventListener('click', () => {
+      nav.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+</html>

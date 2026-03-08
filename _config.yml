@@ -1,22 +1,9 @@
-remote_theme: just-the-docs/just-the-docs
 url: "https://moments8890.github.io"
 baseurl: "/qifa-talk"
 
-plugins:
-  - jekyll-remote-theme
-
 title: 西雅图 · 启发说
-description: 每周三晚上9点在群里报名周末的接龙！
-search_enabled: true
+description: 启发思维，共话未来 — 西雅图华人辩论与讨论社群
 
-# Define Callouts
-callouts:
-  important:
-    title: Important
-    color: purple
-  note:
-    title: Note
-    color: blue
-  warning:
-    title: Warning
-    color: red
+markdown: kramdown
+kramdown:
+  input: GFM
