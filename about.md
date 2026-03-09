@@ -8,7 +8,7 @@ permalink: /about/
 
 ## 我们是谁
 
-**西雅图 · 启发说** 是一个由西雅图华人社区自发组成的非营利性交流组织。我们定期聚集，围绕哲学、社会、科学、文化等多元话题展开辩论与深度讨论。
+**西雅图 · 启发说** 是一个由西雅图华人社区自发组成的非营利性交流组织，已在美国完成 501(c) 免税资质注册。我们定期聚集，围绕哲学、社会、科学、文化等多元话题展开辩论与深度讨论。
 
 我们的灵感来源于爱奇艺辩论节目 [**奇葩说**](https://baike.baidu.com/item/%E5%A5%87%E8%91%A9%E8%AF%B4/15439117) —— 中国首档以年轻人视角探讨当代议题的辩论综艺。我们希望将这种"让思辨变得有趣"的精神带到西雅图的华人社区。
 
@@ -90,12 +90,10 @@ permalink: /about/
       <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">提前了解话题准备</div>
     </div>
   </div>
-  <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:16px;text-align:center;">
-    <div style="font-size:0.85rem;color:#6b7280;margin-bottom:8px;">📱 微信扫码加入社群</div>
-    <div style="background:#f3f4f6;border-radius:8px;width:120px;height:120px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:0.75rem;">
-      二维码
-    </div>
-    <div style="font-size:0.75rem;color:#9ca3af;margin-top:8px;">或联系组织者获取入群方式</div>
+  <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:20px;text-align:center;">
+    <div style="font-size:1.5rem;margin-bottom:8px;">💬</div>
+    <div style="font-size:0.95rem;font-weight:700;color:#3730a3;margin-bottom:6px;">微信入群</div>
+    <div style="font-size:0.85rem;color:#6b7280;line-height:1.6;">群人数已超200人，无法直接扫码入群。<br>请联系组织者获取最新入群链接。</div>
   </div>
 </div>
 

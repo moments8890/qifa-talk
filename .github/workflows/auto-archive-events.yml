@@ -1,0 +1,30 @@
+name: Auto Archive Past Events
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # runs daily at 8:00 UTC (midnight PT)
+  workflow_dispatch:        # allow manual trigger from GitHub UI
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Archive past events
+        run: python3 .github/scripts/archive_events.py
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "auto: archive past events [skip ci]"
+            git push
+          else
+            echo "No events to archive."
+          fi
