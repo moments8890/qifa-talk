@@ -14,18 +14,14 @@ permalink: /join/
 
 我们在小红书上发布活动信息和招募帖，关注后可以第一时间看到新活动。
 
-<a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener"
-   style="display:block;background:#fff5f5;border:2px solid #ff2442;border-radius:16px;padding:24px;text-align:center;text-decoration:none;margin:1rem 0;transition:box-shadow 0.15s;"
-   onmouseover="this.style.boxShadow='0 4px 20px rgba(255,36,66,0.2)'" onmouseout="this.style.boxShadow='none'">
+{::nomarkdown}
+<a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener" style="display:block;background:#fff5f5;border:2px solid #ff2442;border-radius:16px;padding:24px;text-align:center;text-decoration:none;margin:1rem 0;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(255,36,66,0.2)'" onmouseout="this.style.boxShadow='none'">
   <div style="font-size:2rem;margin-bottom:8px;">📕</div>
   <div style="font-size:1.05rem;font-weight:700;color:#ff2442;margin-bottom:6px;">在小红书关注我们</div>
-  <div style="font-size:0.9rem;color:#6b7280;line-height:1.6;margin-bottom:10px;">
-    西雅图有人感兴趣一起来深度聊聊亲密关系吗 那是必须...
-  </div>
-  <div style="display:inline-block;background:#ff2442;color:#fff;font-size:0.85rem;font-weight:600;padding:8px 20px;border-radius:999px;">
-    打开小红书查看帖子 →
-  </div>
+  <div style="font-size:0.9rem;color:#6b7280;line-height:1.6;margin-bottom:10px;">西雅图有人感兴趣一起来深度聊聊亲密关系吗 那是必须...</div>
+  <div style="display:inline-block;background:#ff2442;color:#fff;font-size:0.85rem;font-weight:600;padding:8px 20px;border-radius:999px;">打开小红书查看帖子 →</div>
 </a>
+{:/nomarkdown}
 
 ---
 
