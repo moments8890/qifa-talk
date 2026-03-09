@@ -7,7 +7,7 @@ permalink: /
 <style>
   .card {
     background: #fff;
-    border: 1px solid #ffedd5;
+    border: 1px solid #fff1f2;
     border-radius: 12px;
     padding: 14px 12px;
   }
@@ -15,24 +15,24 @@ permalink: /
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #c2410c;
+    background: #be123c;
     color: #fff;
     font-size: 0.65rem;
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 999px;
   }
-  .card-title { font-weight: 700; font-size: 0.85rem; color: #92400e; margin-bottom: 3px; }
+  .card-title { font-weight: 700; font-size: 0.85rem; color: #881337; margin-bottom: 3px; }
   .card-desc  { font-size: 0.75rem; color: #6b7280; line-height: 1.4; }
   .card-icon  { font-size: 1.5rem; margin-bottom: 6px; }
   .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 1rem 0; }
   .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1rem 0; }
-  .section-label { font-weight: 700; color: #ea580c; font-size: 1rem; letter-spacing: 0.03em; margin-bottom: 10px; }
+  .section-label { font-weight: 700; color: #e11d48; font-size: 1rem; letter-spacing: 0.03em; margin-bottom: 10px; }
   .section-header { display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem; }
-  .section-header-line { flex: 1; height: 1px; background: #ffedd5; }
-  .section-header-text { font-size: 1.3rem; font-weight: 700; color: #ea580c; letter-spacing: 0.04em; white-space: nowrap; }
-  .event-title-link { color: #92400e; text-decoration: none !important; transition: color 0.15s; }
-  .event-title-link:hover { color: #ea580c; }
+  .section-header-line { flex: 1; height: 1px; background: #fff1f2; }
+  .section-header-text { font-size: 1.3rem; font-weight: 700; color: #e11d48; letter-spacing: 0.04em; white-space: nowrap; }
+  .event-title-link { color: #881337; text-decoration: none !important; transition: color 0.15s; }
+  .event-title-link:hover { color: #e11d48; }
   .event-title-arrow { font-size: 0.75em; opacity: 0; transition: opacity 0.15s, transform 0.15s; display: inline-block; transform: translate(-4px, -4px); }
   .event-title-link:hover .event-title-arrow { opacity: 1; transform: translate(0, -4px); }
   /* Latest event card layout */
@@ -53,9 +53,9 @@ permalink: /
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
     <div style="display:flex;align-items:center;gap:6px;">
       <span style="background:#ef4444;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">🔥 最新活动</span>
-      {% if next_event.event_type %}<span style="background:#fff7ed;color:#c2410c;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:999px;">{{ next_event.event_type }}</span>{% endif %}
+      {% if next_event.event_type %}<span style="background:#fff1f2;color:#be123c;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:999px;">{{ next_event.event_type }}</span>{% endif %}
     </div>
-    <a href="{{ next_event.url | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#fff7ed;border-radius:999px;text-decoration:none;color:#c2410c;font-size:1rem;" onmouseover="this.style.background='#fed7aa'" onmouseout="this.style.background='#fff7ed'">→</a>
+    <a href="{{ next_event.url | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#fff1f2;border-radius:999px;text-decoration:none;color:#be123c;font-size:1rem;" onmouseover="this.style.background='#fecdd3'" onmouseout="this.style.background='#fff1f2'">→</a>
   </div>
   <div class="event-card-body">
     <div class="event-card-text">
@@ -79,7 +79,7 @@ permalink: /
         </div>
         {% endif %}
         {% if next_event.description %}
-        <div style="margin-top:8px;padding:10px 12px;background:#fff7ed;border-left:3px solid #fdba74;border-radius:0 8px 8px 0;font-size:0.85rem;color:#4b5563;line-height:1.6;">
+        <div style="margin-top:8px;padding:10px 12px;background:#fff1f2;border-left:3px solid #fda4af;border-radius:0 8px 8px 0;font-size:0.85rem;color:#4b5563;line-height:1.6;">
           💡 {{ next_event.description }}
         </div>
         {% endif %}
