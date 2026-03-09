@@ -27,10 +27,10 @@ permalink: /
   .card-icon  { font-size: 1.5rem; margin-bottom: 6px; }
   .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 1rem 0; }
   .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1rem 0; }
-  .section-label { font-weight: 600; color: #9ca3af; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+  .section-label { font-weight: 700; color: #6366f1; font-size: 1rem; letter-spacing: 0.03em; margin-bottom: 10px; }
   .section-header { display: flex; align-items: center; gap: 10px; margin: 2rem 0 1rem; }
   .section-header-line { flex: 1; height: 1px; background: #e0e7ff; }
-  .section-header-text { font-size: 0.8rem; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .section-header-text { font-size: 1.3rem; font-weight: 700; color: #6366f1; letter-spacing: 0.04em; white-space: nowrap; }
   .event-title-link { color: #3730a3; text-decoration: none !important; transition: color 0.15s; }
   .event-title-link:hover { color: #6366f1; }
   .event-title-arrow { font-size: 0.75em; opacity: 0; transition: opacity 0.15s, transform 0.15s; display: inline-block; transform: translate(-4px, -4px); }
@@ -86,7 +86,7 @@ permalink: /
       </div>
     </div>
     {% assign img_num = next_event.nav_order | prepend: "00" | slice: -3, 3 %}
-    <img src="/assets/images/{{ img_num }}.jpg" alt="{{ next_event.title }}"
+    <img src="{{ '/assets/images/' | append: img_num | append: '.jpg' | relative_url }}" alt="{{ next_event.title }}"
          onerror="this.style.display='none'"
          class="event-card-img">
   </div>
@@ -107,7 +107,7 @@ permalink: /
   </a>
   {% endfor %}
   </div>
-  <a href="{{ '/upcoming/' | relative_url }}" class="btn-text" style="margin-top:8px;">查看全部 <span>→</span></a>
+  <a href="{{ '/upcoming/' | relative_url }}" class="btn-outline" style="margin-top:12px;font-size:0.85rem;padding:7px 20px;">查看全部活动 →</a>
 </div>
 {% endif %}
 
@@ -117,7 +117,7 @@ permalink: /
   <div class="card">
     <div class="card-icon">💬</div>
     <div class="card-title">加入微信群</div>
-    <div class="card-desc">联系我们获取群二维码</div>
+    <div class="card-desc">联系组织者获取最新入群链接</div>
   </div>
   <div class="card">
     <div class="card-icon">📅</div>

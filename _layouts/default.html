@@ -126,11 +126,16 @@
 
   <!-- Main content -->
   <main class="flex-1 max-w-3xl mx-auto w-full px-4 py-8">
-    {% if page.image %}
+    {% if page.nav_order %}
+      {% assign img_num = page.nav_order | prepend: "00" | slice: -3, 3 %}
+      {% assign auto_image = "/assets/images/" | append: img_num | append: ".jpg" %}
+    {% endif %}
+    {% assign display_image = page.image | default: auto_image %}
+    {% if display_image %}
     <div class="event-layout">
       <div class="event-text-col prose">{{ content }}</div>
       <div class="event-img-col">
-        <img src="{{ page.image }}" alt="{{ page.title }}" onerror="this.parentElement.style.display='none'">
+        <img src="{{ display_image | relative_url }}" alt="{{ page.title }}" onerror="this.parentElement.style.display='none'">
       </div>
     </div>
     {% else %}
