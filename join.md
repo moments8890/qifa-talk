@@ -43,24 +43,24 @@ permalink: /join/
 提前了解话题，准备你的观点。没有"正确答案"，只有真诚的交流。
 
 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:1rem 0;">
-  <div style="background:#eef2ff;border-radius:12px;padding:16px;text-align:center;">
+  <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center;">
     <div style="font-size:1.5rem;margin-bottom:6px;">🗣️</div>
-    <div style="font-weight:600;color:#3730a3;font-size:0.9rem;">辩论局</div>
+    <div style="font-weight:600;color:#92400e;font-size:0.9rem;">辩论局</div>
     <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">正反方结构化辩论</div>
   </div>
-  <div style="background:#eef2ff;border-radius:12px;padding:16px;text-align:center;">
+  <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center;">
     <div style="font-size:1.5rem;margin-bottom:6px;">💡</div>
-    <div style="font-weight:600;color:#3730a3;font-size:0.9rem;">科普/分享</div>
+    <div style="font-weight:600;color:#92400e;font-size:0.9rem;">科普/分享</div>
     <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">成员主讲，开放讨论</div>
   </div>
-  <div style="background:#eef2ff;border-radius:12px;padding:16px;text-align:center;">
+  <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center;">
     <div style="font-size:1.5rem;margin-bottom:6px;">🎬</div>
-    <div style="font-weight:600;color:#3730a3;font-size:0.9rem;">一起看电影</div>
+    <div style="font-weight:600;color:#92400e;font-size:0.9rem;">一起看电影</div>
     <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">放映 + 深度讨论</div>
   </div>
-  <div style="background:#eef2ff;border-radius:12px;padding:16px;text-align:center;">
+  <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center;">
     <div style="font-size:1.5rem;margin-bottom:6px;">🌿</div>
-    <div style="font-weight:600;color:#3730a3;font-size:0.9rem;">户外活动</div>
+    <div style="font-weight:600;color:#92400e;font-size:0.9rem;">户外活动</div>
     <div style="font-size:0.8rem;color:#6b7280;margin-top:4px;">边走边聊，轻松交流</div>
   </div>
 </div>
