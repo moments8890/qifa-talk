@@ -68,40 +68,6 @@ permalink: /about/
 
 ---
 
-## 🤝 加入我们
-
-<div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:16px;padding:28px 24px;margin:1rem 0;">
-  <div style="font-size:1.4rem;font-weight:700;color:#3730a3;margin-bottom:6px;">想参加启发说？</div>
-  <div style="color:#6b7280;font-size:0.95rem;margin-bottom:20px;">无论你是辩论老手还是第一次来，都非常欢迎。氛围轻松，重在交流与启发。</div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
-    <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
-      <div style="font-size:1.4rem;margin-bottom:6px;">①</div>
-      <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">关注小红书</div>
-      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">点击链接查看帖子</div>
-    </div>
-    <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
-      <div style="font-size:1.4rem;margin-bottom:6px;">②</div>
-      <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">周一晚报名</div>
-      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">活动帖内报名参与</div>
-    </div>
-    <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
-      <div style="font-size:1.4rem;margin-bottom:6px;">③</div>
-      <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">带观点来！</div>
-      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">提前了解话题准备</div>
-    </div>
-  </div>
-  <a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener"
-     style="display:block;background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:20px;text-align:center;text-decoration:none;transition:box-shadow 0.15s;"
-     onmouseover="this.style.boxShadow='0 4px 16px rgba(79,70,229,0.15)'" onmouseout="this.style.boxShadow='none'">
-    <div style="font-size:1.5rem;margin-bottom:8px;">📕</div>
-    <div style="font-size:0.95rem;font-weight:700;color:#3730a3;margin-bottom:6px;">在小红书关注我们</div>
-    <div style="font-size:0.85rem;color:#6b7280;line-height:1.6;">西雅图有人感兴趣一起来深度聊聊亲密关系吗 那是必须...<br>
-    <span style="color:#4f46e5;font-size:0.8rem;margin-top:6px;display:inline-block;">点击查看帖子 →</span></div>
-  </a>
-</div>
-
----
-
 ## 📋 辩论局标准流程
 
 * 💭 **同组交流观点**（15 分钟）
