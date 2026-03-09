@@ -164,7 +164,7 @@ permalink: /
 
 <div class="section-header"><div class="section-header-line"></div><div class="section-header-text">🔗 快速导航</div><div class="section-header-line"></div></div>
 
-<div class="grid-3">
+<div class="grid-2">
   <a href="{{ '/upcoming/' | relative_url }}" class="card-btn" style="text-align:center;">
     <div class="card-icon">🙌</div>
     <div class="card-title" style="margin-bottom:2px;">即将开始</div>
@@ -179,5 +179,10 @@ permalink: /
     <div class="card-icon">💡</div>
     <div class="card-title" style="margin-bottom:2px;">关于我们</div>
     <div class="card-desc">未来规划</div>
+  </a>
+  <a href="{{ '/join/' | relative_url }}" class="card-btn" style="text-align:center;">
+    <div class="card-icon">🤝</div>
+    <div class="card-title" style="margin-bottom:2px;">如何加入</div>
+    <div class="card-desc">加入我们</div>
   </a>
 </div>
