@@ -76,13 +76,13 @@ permalink: /about/
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
     <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
       <div style="font-size:1.4rem;margin-bottom:6px;">①</div>
-      <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">扫码入群</div>
-      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">获取微信群二维码</div>
+      <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">关注小红书</div>
+      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">点击链接查看帖子</div>
     </div>
     <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
       <div style="font-size:1.4rem;margin-bottom:6px;">②</div>
       <div style="font-size:0.8rem;font-weight:600;color:#3730a3;">周一晚报名</div>
-      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">群内接龙报名参与</div>
+      <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">活动帖内报名参与</div>
     </div>
     <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 10px;text-align:center;">
       <div style="font-size:1.4rem;margin-bottom:6px;">③</div>
@@ -90,11 +90,14 @@ permalink: /about/
       <div style="font-size:0.72rem;color:#9ca3af;margin-top:3px;">提前了解话题准备</div>
     </div>
   </div>
-  <div style="background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:20px;text-align:center;">
-    <div style="font-size:1.5rem;margin-bottom:8px;">💬</div>
-    <div style="font-size:0.95rem;font-weight:700;color:#3730a3;margin-bottom:6px;">微信入群</div>
-    <div style="font-size:0.85rem;color:#6b7280;line-height:1.6;">群人数已超200人，无法直接扫码入群。<br>请联系组织者获取最新入群链接。</div>
-  </div>
+  <a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener"
+     style="display:block;background:#fff;border:1px solid #e0e7ff;border-radius:10px;padding:20px;text-align:center;text-decoration:none;transition:box-shadow 0.15s;"
+     onmouseover="this.style.boxShadow='0 4px 16px rgba(79,70,229,0.15)'" onmouseout="this.style.boxShadow='none'">
+    <div style="font-size:1.5rem;margin-bottom:8px;">📕</div>
+    <div style="font-size:0.95rem;font-weight:700;color:#3730a3;margin-bottom:6px;">在小红书关注我们</div>
+    <div style="font-size:0.85rem;color:#6b7280;line-height:1.6;">西雅图有人感兴趣一起来深度聊聊亲密关系吗 那是必须...<br>
+    <span style="color:#4f46e5;font-size:0.8rem;margin-top:6px;display:inline-block;">点击查看帖子 →</span></div>
+  </a>
 </div>
 
 ---
