@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+                   "Microsoft YaHei", "Source Han Sans SC", "Helvetica Neue", sans-serif;
+      margin: 0; padding: 0; overflow: hidden;
+    }
+
+    /* Timer app wrapper — fills remaining height after qifa-talk nav */
+    #timer-app {
+      height: calc(100vh - 3.5rem); /* 3.5rem = 56px = h-14 nav */
+      display: flex;
+      flex-direction: column;
+      background-color: #f4f4f9;
+      color: #333;
+      overflow: hidden;
+    }
+
+    /* Timer navbar (Standard / Free Debate tabs) */
+    .timer-navbar {
+      background-color: #2c3e50;
+      padding: 12px 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      background: none; border: none; color: #bdc3c7;
+      font-size: 1.05em; padding: 8px 20px; cursor: pointer;
+      transition: color 0.3s, background-color 0.3s;
+      border-radius: 4px; margin: 0 8px; font-weight: 600;
+    }
+    .nav-btn:hover { color: white; background-color: rgba(255,255,255,0.1); }
+    .nav-btn.active {
+      color: white; background-color: #34495e;
+      border-bottom: 2px solid #3498db;
+    }
+
+    /* Main content area */
+    .timer-main {
+      flex: 1; position: relative; width: 100%; overflow: hidden;
+    }
+    section {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      background-color: white;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .hidden-section { opacity: 0; pointer-events: none; z-index: 0; }
+    .active-section { opacity: 1; pointer-events: auto; z-index: 1; }
+
+    /* Standard Timer */
+    .timer-container {
+      text-align: center; width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+    }
+    .timer-display {
+      font-size: 25vw; font-weight: bold; font-family: monospace;
+      margin: 0; line-height: 1; color: #2c3e50; white-space: nowrap;
+    }
+    .controls button {
+      padding: 15px 30px; font-size: 1.5em; margin: 0 10px;
+      cursor: pointer; background-color: #3498db; color: white;
+      border: none; border-radius: 5px;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+    .controls button:active { transform: scale(0.98); }
+    .controls button:hover { background-color: #2980b9; }
+    .controls button#reset-btn { background-color: #e74c3c; }
+    .controls button#reset-btn:hover { background-color: #c0392b; }
+    .settings { margin-top: 30px; font-size: 1.2em; }
+    .timer-settings {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    input[type="number"] {
+      padding: 8px; width: 70px; margin-left: 10px;
+      border: 1px solid #ddd; border-radius: 4px;
+      font-size: 1em; text-align: center;
+    }
+    input[type="text"] {
+      padding: 8px 12px; width: 120px;
+      border: 1px solid #ddd; border-radius: 4px;
+      font-size: 1em; text-align: center;
+    }
+
+    /* Free Debate Timer */
+    .debate-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .debate-header {
+      text-align: center; padding: 12px;
+      background-color: #f9f9f9; border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+    .debate-header h2 { margin: 0 0 6px; font-size: 1.1em; color: #2c3e50; }
+    .usage-guide {
+      margin: 6px 0; padding: 8px 16px;
+      background-color: #e8f4f8; border-radius: 5px;
+      border-left: 4px solid #3498db; display: inline-block;
+    }
+    .usage-guide p { margin: 0; font-size: 0.9em; color: #34495e; }
+    .usage-guide kbd {
+      background-color: #fff; border: 1px solid #bdc3c7;
+      border-radius: 3px; padding: 2px 6px; font-family: monospace;
+      font-size: 0.9em; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-weight: 600;
+    }
+    .header-actions {
+      display: flex; justify-content: center; align-items: center;
+      gap: 10px; margin-top: 6px;
+    }
+    .debate-container { display: flex; flex: 1; width: 100%; overflow: hidden; }
+    .side {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; padding: 10px;
+      background-color: #ecf0f1; transition: all 0.2s ease;
+      cursor: crosshair; border-right: 1px solid #ddd;
+    }
+    .side:last-child { border-right: none; }
+    .side h3 { font-size: 3em; margin: 0 0 10px 0; color: #7f8c8d; }
+    .debate-container[data-mode="config"] .side { display: none; }
+    .debate-container[data-mode="config"] .config-form { display: flex; }
+    .debate-container[data-mode="timer"] .config-form { display: none; }
+    .debate-container[data-mode="timer"] ~ .debate-footer .mode-btn {
+      background-color: #7f8c8d; padding: 8px 20px;
+      font-size: 0.95rem; width: auto;
+    }
+    .debate-container[data-mode="timer"] ~ .debate-footer .mode-btn:hover {
+      background-color: #6c7a7d;
+    }
+    .config-form {
+      display: none; flex-direction: column;
+      justify-content: center; align-items: center;
+      gap: 24px; width: 100%; padding: 40px 20px;
+    }
+    .config-field { display: flex; align-items: center; gap: 12px; font-size: 1.3em; }
+    .config-field label { min-width: 2.8em; text-align: right; font-weight: 600; color: #2c3e50; }
+    .config-field input[type="text"] {
+      font-size: 1em; padding: 10px 14px;
+      border: 1px solid #bdc3c7; border-radius: 5px; width: 160px;
+    }
+    .config-field input[type="number"] {
+      font-size: 1em; padding: 10px 8px;
+      border: 1px solid #bdc3c7; border-radius: 5px; width: 64px; text-align: center;
+    }
+    .config-field .unit { color: #7f8c8d; font-size: 0.9em; }
+    .debate-footer {
+      padding: 10px 16px; background-color: #f9f9f9;
+      border-top: 1px solid #eee; display: flex; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mode-btn {
+      padding: 12px 32px; font-size: 1.1rem; background-color: #27ae60;
+      color: white; border: none; border-radius: 6px; cursor: pointer;
+      transition: background-color 0.2s; width: 100%; max-width: 320px;
+    }
+    .mode-btn:hover { background-color: #219a52; }
+    .side .time-display {
+      font-size: 13vw; font-family: monospace; font-weight: bold;
+      line-height: 1; color: #7f8c8d; white-space: nowrap;
+    }
+    .side.active { background-color: #fff; color: #2c3e50; }
+    .side.left-side.active { background-color: #fdedec; }
+    .side.left-side.active h3,
+    .side.left-side.active .time-display,
+    .side.left-side.active .status { color: #c0392b; }
+    .side.right-side.active { background-color: #ebf5fb; }
+    .side.right-side.active h3,
+    .side.right-side.active .time-display,
+    .side.right-side.active .status { color: #2980b9; }
+    .side.paused { opacity: 0.5; background-color: #bdc3c7; }
+    .status { font-size: 1.5em; color: #95a5a6; margin-top: 20px; font-weight: 500; }
+    .side.active .status { font-weight: bold; }
+
+    @keyframes blink-slow { 0%, 100% { color: inherit; } 50% { color: #e67e22; } }
+    @keyframes blink-medium { 0%, 100% { color: inherit; } 50% { color: #e74c3c; } }
+    @keyframes blink-fast { 0%, 100% { color: inherit; } 50% { color: #c0392b; } }
+    .blink-30 { animation: blink-slow 1.5s infinite; }
+    .blink-15 { animation: blink-medium 1s infinite; }
+    .blink-10 { animation: blink-fast 0.7s infinite; }
+
+    @media (max-width: 768px) {
+      .timer-navbar { padding: 8px 4px; }
+      .nav-btn { font-size: 0.95em; padding: 8px 14px; margin: 0 3px; }
+      .controls { display: flex; justify-content: center; gap: 10px; width: 90%; max-width: 400px; }
+      .controls button { flex: 1; padding: 16px 0; font-size: 1.2em; margin: 0; }
+      .settings { margin-top: 14px; font-size: 1.1em; }
+      .debate-header { padding: 6px 8px; }
+      .debate-header h2 { font-size: 1em; }
+      .usage-guide { display: none; }
+      .side h3 { font-size: 2em; }
+      .status { font-size: 1.1em; margin-top: 10px; }
+    }
+    @media (max-width: 480px) {
+      .debate-container { flex-direction: column; }
+      .side { border-right: none; border-bottom: 1px solid #ddd; }
+      .side:last-child { border-bottom: none; }
+      .side .time-display { font-size: 28vw; }
+      .side h3 { font-size: 2.2em; }
+    }
+    @media (max-height: 450px) and (orientation: landscape) {
+      .debate-header { display: none; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .side { cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Qifa Talk Navigation -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-full px-4">
+      <div class="flex justify-between items-center h-14">
+        <a href="{{ '/' | relative_url }}" class="text-lg font-bold text-indigo-700 tracking-wide hover:text-indigo-500 transition-colors">
+          🌟 启发说
+        </a>
+        <div class="hidden md:flex items-center gap-5 text-sm font-medium text-gray-600">
+          <a href="{{ '/' | relative_url }}" class="hover:text-indigo-600 transition-colors">首页</a>
+          <a href="{{ '/upcoming/' | relative_url }}" class="hover:text-indigo-600 transition-colors">即将开始</a>
+          <a href="{{ '/past/' | relative_url }}" class="hover:text-indigo-600 transition-colors">往期活动</a>
+          <a href="{{ '/about/' | relative_url }}" class="hover:text-indigo-600 transition-colors">关于我们</a>
+          <a href="{{ '/join/' | relative_url }}" class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors">🤝 如何加入</a>
+        </div>
+        <button id="menu-btn" class="md:hidden p-1 rounded text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="菜单">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="mobile-nav" class="hidden pb-4 md:hidden border-t border-gray-100 pt-2 space-y-1">
+        <a href="{{ '/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">🏠 首页</a>
+        <a href="{{ '/upcoming/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">🙌 即将开始</a>
+        <a href="{{ '/past/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">📅 往期活动</a>
+        <a href="{{ '/about/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">💡 关于我们</a>
+        <a href="{{ '/join/' | relative_url }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors">🤝 如何加入</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Timer App -->
+  <div id="timer-app">
+    <nav class="timer-navbar">
+      <button class="nav-btn active" data-target="standard-timer-section">计时器</button>
+      <button class="nav-btn" data-target="free-debate-section">自由辩论</button>
+    </nav>
+
+    <div class="timer-main">
+      <!-- Standard Countdown Timer -->
+      <section id="standard-timer-section" class="active-section">
+        <div class="timer-container">
+          <div class="timer-display" id="main-timer-display">05:00</div>
+          <div class="controls">
+            <button id="start-btn">开始</button>
+            <button id="pause-btn">暂停</button>
+            <button id="reset-btn">重置</button>
+          </div>
+          <div class="settings">
+            <div class="timer-settings">
+              <label for="duration-input">时长（分钟）：</label>
+              <input type="number" id="duration-input" value="5" min="1" max="60">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Free Debate Timer -->
+      <section id="free-debate-section" class="hidden-section">
+        <div class="debate-wrapper">
+          <div class="debate-header">
+            <h2>自由辩论计时器</h2>
+            <div class="usage-guide">
+              <p><strong>操作：</strong> 悬停在某侧开始计时 | <kbd>←</kbd> 左侧 | <kbd>→</kbd> 右侧 | <kbd>空格</kbd> 或 <kbd>Esc</kbd> 暂停</p>
+            </div>
+            <div class="header-actions">
+              <button id="reset-debate-btn">重置</button>
+            </div>
+          </div>
+          <div class="debate-container" data-mode="config">
+            <div class="config-form">
+              <div class="config-field">
+                <label>正方：</label>
+                <input type="text" id="config-pro" value="正方" maxlength="20">
+              </div>
+              <div class="config-field">
+                <label>反方：</label>
+                <input type="text" id="config-con" value="反方" maxlength="20">
+              </div>
+              <div class="config-field">
+                <label>时间：</label>
+                <input type="number" id="config-time" value="4" min="1" max="60">
+                <span class="unit">分钟</span>
+              </div>
+            </div>
+            <div class="side left-side" id="side-a">
+              <h3>正方</h3>
+              <div class="time-display" id="timer-a">04:00</div>
+              <p class="status">悬停开始</p>
+            </div>
+            <div class="side right-side" id="side-b">
+              <h3>反方</h3>
+              <div class="time-display" id="timer-b">04:00</div>
+              <p class="status">悬停开始</p>
+            </div>
+          </div>
+          <div class="debate-footer">
+            <button id="debate-mode-btn" class="mode-btn">▶ 开始计时</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Mobile nav toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const iconOpen = document.getElementById('icon-open');
+    const iconClose = document.getElementById('icon-close');
+    menuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    });
+
+    // --- Audio ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(duration = 200, frequency = 880, volume = 0.2) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        gain.gain.value = volume;
+        osc.type = 'sine';
+        osc.frequency.value = frequency;
+        osc.start();
+        setTimeout(() => osc.stop(), duration);
+      } catch (e) { console.warn('Beep failed', e); }
+    }
+
+    // --- Timer Tab Navigation ---
+    const navButtons = document.querySelectorAll('.timer-navbar .nav-btn');
+    const sections = document.querySelectorAll('#timer-app section');
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sections.forEach(s => { s.classList.remove('active-section'); s.classList.add('hidden-section'); });
+        const targetSection = document.getElementById(btn.getAttribute('data-target'));
+        targetSection.classList.remove('hidden-section');
+        targetSection.classList.add('active-section');
+      });
+    });
+
+    // --- Standard Timer ---
+    let mainTimerInterval, mainTimeLeft = 5 * 60, mainIsRunning = false, mainWarningTriggered = false;
+    const MAIN_WARNING_THRESHOLD = 10;
+    const mainTimerDisplay = document.getElementById('main-timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const durationInput = document.getElementById('duration-input');
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60), s = seconds % 60;
+      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    function updateMainTimerDisplay() {
+      mainTimerDisplay.textContent = formatTime(mainTimeLeft);
+      mainTimerDisplay.classList.remove('blink-30','blink-15','blink-10');
+      if (mainTimeLeft <= 10 && mainTimeLeft > 0) mainTimerDisplay.classList.add('blink-10');
+      else if (mainTimeLeft <= 15 && mainTimeLeft > 0) mainTimerDisplay.classList.add('blink-15');
+      else if (mainTimeLeft <= 30 && mainTimeLeft > 0) mainTimerDisplay.classList.add('blink-30');
+    }
+    function startMainTimer() {
+      if (mainIsRunning) return;
+      if (mainTimeLeft <= 0) { resetMainTimer(); return; }
+      mainIsRunning = true;
+      mainTimerInterval = setInterval(() => {
+        if (mainTimeLeft > 0) {
+          mainTimeLeft--;
+          updateMainTimerDisplay();
+          if (!mainWarningTriggered && mainTimeLeft <= MAIN_WARNING_THRESHOLD) {
+            mainWarningTriggered = true;
+            beep(200, 880, 0.25);
+            setTimeout(() => beep(150, 880, 0.2), 350);
+          }
+        } else {
+          clearInterval(mainTimerInterval);
+          mainIsRunning = false;
+          mainTimerDisplay.classList.remove('blink-30','blink-15','blink-10');
+        }
+      }, 1000);
+    }
+    function pauseMainTimer() {
+      clearInterval(mainTimerInterval); mainIsRunning = false;
+      mainTimerDisplay.classList.remove('blink-30','blink-15','blink-10');
+    }
+    function resetMainTimer() {
+      pauseMainTimer();
+      mainTimeLeft = (parseInt(durationInput.value) || 5) * 60;
+      mainWarningTriggered = false;
+      updateMainTimerDisplay();
+    }
+    startBtn.addEventListener('click', startMainTimer);
+    pauseBtn.addEventListener('click', pauseMainTimer);
+    resetBtn.addEventListener('click', resetMainTimer);
+    durationInput.addEventListener('change', resetMainTimer);
+    resetMainTimer();
+
+    // --- Free Debate Timer ---
+    let debateIntervalA, debateIntervalB;
+    let timeLeftA = 4 * 60, timeLeftB = 4 * 60;
+    let activeSide = null;
+    const DEBATE_WARNING_THRESHOLD = 10;
+    let warningTriggeredA = false, warningTriggeredB = false;
+    const sideA = document.getElementById('side-a');
+    const sideB = document.getElementById('side-b');
+    const timerDisplayA = document.getElementById('timer-a');
+    const timerDisplayB = document.getElementById('timer-b');
+    const configPro = document.getElementById('config-pro');
+    const configCon = document.getElementById('config-con');
+    const configTime = document.getElementById('config-time');
+    const resetDebateBtn = document.getElementById('reset-debate-btn');
+    const debateModeBtn = document.getElementById('debate-mode-btn');
+    const debateContainer = document.querySelector('.debate-container');
+
+    function updateDebateDisplay() {
+      timerDisplayA.textContent = formatTime(timeLeftA);
+      timerDisplayB.textContent = formatTime(timeLeftB);
+      timerDisplayA.classList.remove('blink-30','blink-15','blink-10');
+      if (timeLeftA <= 10 && timeLeftA > 0) timerDisplayA.classList.add('blink-10');
+      else if (timeLeftA <= 15 && timeLeftA > 0) timerDisplayA.classList.add('blink-15');
+      else if (timeLeftA <= 30 && timeLeftA > 0) timerDisplayA.classList.add('blink-30');
+      timerDisplayB.classList.remove('blink-30','blink-15','blink-10');
+      if (timeLeftB <= 10 && timeLeftB > 0) timerDisplayB.classList.add('blink-10');
+      else if (timeLeftB <= 15 && timeLeftB > 0) timerDisplayB.classList.add('blink-15');
+      else if (timeLeftB <= 30 && timeLeftB > 0) timerDisplayB.classList.add('blink-30');
+    }
+    function startSideA() {
+      if (activeSide === 'A' || timeLeftA <= 0) return;
+      clearInterval(debateIntervalB);
+      sideB.classList.remove('active'); sideB.classList.add('paused');
+      activeSide = 'A';
+      sideA.classList.add('active'); sideA.classList.remove('paused');
+      sideA.querySelector('.status').textContent = "发言中...";
+      sideB.querySelector('.status').textContent = "等待中...";
+      debateIntervalA = setInterval(() => {
+        if (timeLeftA > 0) {
+          timeLeftA--; updateDebateDisplay();
+          if (!warningTriggeredA && timeLeftA <= DEBATE_WARNING_THRESHOLD) {
+            warningTriggeredA = true;
+            beep(180, 600, 0.22); setTimeout(() => beep(130, 600, 0.18), 300);
+          }
+        } else {
+          clearInterval(debateIntervalA); sideA.classList.remove('active');
+          timerDisplayA.classList.remove('blink-30','blink-15','blink-10');
+          sideA.querySelector('.status').textContent = "时间到！";
+        }
+      }, 1000);
+    }
+    function startSideB() {
+      if (activeSide === 'B' || timeLeftB <= 0) return;
+      clearInterval(debateIntervalA);
+      sideA.classList.remove('active'); sideA.classList.add('paused');
+      activeSide = 'B';
+      sideB.classList.add('active'); sideB.classList.remove('paused');
+      sideB.querySelector('.status').textContent = "发言中...";
+      sideA.querySelector('.status').textContent = "等待中...";
+      debateIntervalB = setInterval(() => {
+        if (timeLeftB > 0) {
+          timeLeftB--; updateDebateDisplay();
+          if (!warningTriggeredB && timeLeftB <= DEBATE_WARNING_THRESHOLD) {
+            warningTriggeredB = true;
+            beep(180, 1000, 0.22); setTimeout(() => beep(130, 1000, 0.18), 300);
+          }
+        } else {
+          clearInterval(debateIntervalB); sideB.classList.remove('active');
+          timerDisplayB.classList.remove('blink-30','blink-15','blink-10');
+          sideB.querySelector('.status').textContent = "时间到！";
+        }
+      }, 1000);
+    }
+    function pauseDebate() {
+      clearInterval(debateIntervalA); clearInterval(debateIntervalB);
+      activeSide = null;
+      sideA.classList.remove('active','paused'); sideB.classList.remove('active','paused');
+      timerDisplayA.classList.remove('blink-30','blink-15','blink-10');
+      timerDisplayB.classList.remove('blink-30','blink-15','blink-10');
+    }
+    function resetDebate() {
+      pauseDebate();
+      const mins = (parseInt(configTime.value) || 4) * 60;
+      timeLeftA = mins; timeLeftB = mins;
+      warningTriggeredA = false; warningTriggeredB = false;
+      updateDebateDisplay();
+    }
+    function setDebateMode(mode) {
+      debateContainer.dataset.mode = mode;
+      if (mode === 'timer') {
+        debateModeBtn.textContent = '◀ 设置';
+        sideA.querySelector('h3').textContent = configPro.value || '正方';
+        sideB.querySelector('h3').textContent = configCon.value || '反方';
+        resetDebate();
+      } else {
+        debateModeBtn.textContent = '▶ 开始计时';
+        pauseDebate();
+      }
+    }
+    debateModeBtn.addEventListener('click', () => {
+      setDebateMode(debateContainer.dataset.mode === 'config' ? 'timer' : 'config');
+    });
+
+    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const idleStatus = isTouchDevice ? "点击开始" : "悬停开始";
+    sideA.querySelector('.status').textContent = idleStatus;
+    sideB.querySelector('.status').textContent = idleStatus;
+
+    function pauseDebateAndReset() {
+      pauseDebate();
+      sideA.querySelector('.status').textContent = idleStatus;
+      sideB.querySelector('.status').textContent = idleStatus;
+    }
+    if (!isTouchDevice) {
+      sideA.addEventListener('mouseenter', startSideA);
+      sideB.addEventListener('mouseenter', startSideB);
+      debateContainer.addEventListener('mouseleave', pauseDebateAndReset);
+    }
+    sideA.addEventListener('click', () => { if (activeSide === 'A') pauseDebateAndReset(); else startSideA(); });
+    sideB.addEventListener('click', () => { if (activeSide === 'B') pauseDebateAndReset(); else startSideB(); });
+    resetDebateBtn.addEventListener('click', resetDebate);
+
+    document.addEventListener('keydown', (e) => {
+      const freeDebateSection = document.getElementById('free-debate-section');
+      if (!freeDebateSection.classList.contains('active-section')) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); startSideA(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); startSideB(); }
+      else if (e.key === ' ' || e.key === 'Escape') { e.preventDefault(); pauseDebateAndReset(); }
+    });
+    resetDebate();
+  </script>
+
+</body>
+</html>
