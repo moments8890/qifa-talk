@@ -45,6 +45,7 @@ test('parses a numbered heading and metadata', () => {
       '边走边聊 Ballard 的历史和移民文化。',
     ].join('\n'),
     links: [],
+    images: [{ src: 'https://zhz1208.notion.site/image/054.jpg', alt: '' }],
     blockId: 'block-054',
   });
 
@@ -56,6 +57,7 @@ test('parses a numbered heading and metadata', () => {
   assert.equal(event.type, '沉浸式体验');
   assert.equal(event.host, 'Lay & 老魏');
   assert.equal(event.description, '边走边聊 Ballard 的历史和移民文化。');
+  assert.equal(event.posterUrl, 'https://zhz1208.notion.site/image/054.jpg');
 });
 
 test('ignores unnumbered candidates', () => {

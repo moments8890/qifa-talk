@@ -20,6 +20,10 @@ import {
   normalizeEvents,
   parseEventBlock,
 } from './parse.mjs';
+import {
+  buildDesiredPosterFiles,
+  downloadPosters,
+} from './posters.mjs';
 import { renderEvent } from './render.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -52,7 +56,11 @@ const renderedEvents = events.map((event) => ({
   ...event,
   markdown: renderEvent(event),
 }));
-const desired = buildDesiredFiles(renderedEvents);
+const posters = await downloadPosters(events);
+const desired = new Map([
+  ...buildDesiredFiles(renderedEvents),
+  ...buildDesiredPosterFiles(posters),
+]);
 const changes = await applyEventFiles(root, desired, {
   write: options.write,
   adoptExisting: options.adoptExisting,

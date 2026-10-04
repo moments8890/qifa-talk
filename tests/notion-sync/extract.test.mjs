@@ -4,6 +4,7 @@ import { chromium } from 'playwright';
 import {
   assertSuccessfulResponse,
   expandVisibleToggles,
+  hydrateEventImages,
   extractNotionEvents,
   extractPageEvents,
   retryAsync,
@@ -59,6 +60,7 @@ test('extracts event columns and their links from a Notion-shaped page', async (
         <h3>054. 边走边认识西雅图｜Ballard</h3>
         <div>时间：10/4/2026 周日</div>
         <div>地点：Ballard</div>
+        <img style="display:block" src="https://zhz1208.notion.site/image/poster-054.jpg" alt="活动海报">
         <a href="https://example.com/outline">活动资料</a>
       </div>
       <div class="notion-column-block" data-block-id="candidate">
@@ -77,12 +79,17 @@ test('extracts event columns and their links from a Notion-shaped page', async (
         ].join('\n'),
         blockId: 'event-054',
         links: [{ text: '活动资料', href: 'https://example.com/outline' }],
+        images: [{
+          alt: '活动海报',
+          src: 'https://zhz1208.notion.site/image/poster-054.jpg',
+        }],
       },
       {
         heading: '0XX. 候选活动',
         text: '0XX. 候选活动',
         blockId: 'candidate',
         links: [],
+        images: [],
       },
     ]);
   } finally {
@@ -116,6 +123,93 @@ test('segments adjacent events even when Notion nests them in one outer column',
     assert.equal(
       rows[1].text,
       ['066. Second', '时间：11/22/2026 周日', 'Second description'].join('\n'),
+    );
+    assert.deepEqual(rows.map((row) => row.images), [[], []]);
+  } finally {
+    await browser.close();
+  }
+});
+
+test('associates a poster in a sibling column before the event heading', async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(`
+      <div class="event-row">
+        <div class="notion-column-block">
+          <img src="https://zhz1208.notion.site/image/001.jpg" alt="活动海报">
+        </div>
+        <div class="notion-column-block" data-block-id="event-001">
+          <h3>001. First</h3>
+          <div>时间：1/1/2026 周四</div>
+        </div>
+      </div>
+    `);
+
+    const [row] = await extractPageEvents(page);
+    assert.deepEqual(row.images, [{
+      alt: '活动海报',
+      src: 'https://zhz1208.notion.site/image/001.jpg',
+    }]);
+  } finally {
+    await browser.close();
+  }
+});
+
+test('pairs headings with posters stored in a parallel Notion column', async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(`
+      <div class="notion-column_list-block">
+        <div class="notion-column-block" data-block-id="event-text">
+          <h3>003. Third</h3>
+          <h3>002. Second</h3>
+          <h3>001. First</h3>
+        </div>
+        <div class="notion-column-block" data-block-id="event-posters">
+          <img src="https://zhz1208.notion.site/image/003.jpg" alt="003 poster">
+        </div>
+      </div>
+    `);
+
+    const rows = await extractPageEvents(page);
+    assert.deepEqual(rows.map((row) => row.images), [
+      [{ alt: '003 poster', src: 'https://zhz1208.notion.site/image/003.jpg' }],
+      [],
+      [],
+    ]);
+  } finally {
+    await browser.close();
+  }
+});
+
+test('hydrates each numbered event image before extraction', async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(`
+      <div class="notion-column-block" style="height:900px">
+        <h3>001. First</h3>
+        <img loading="lazy" src="https://zhz1208.notion.site/image/001.jpg">
+      </div>
+      <div class="notion-column-block" style="height:900px">
+        <h3>002. Second</h3>
+        <img loading="lazy" src="https://zhz1208.notion.site/image/002.jpg">
+      </div>
+    `);
+
+    const hydratedImages = await hydrateEventImages(page, { delayMs: 0 });
+    await page.locator('img').evaluateAll((images) => images.forEach((image) => image.remove()));
+    assert.deepEqual(
+      (await extractPageEvents(page, hydratedImages)).map((row) => row.images[0].src),
+      [
+        'https://zhz1208.notion.site/image/001.jpg',
+        'https://zhz1208.notion.site/image/002.jpg',
+      ],
     );
   } finally {
     await browser.close();

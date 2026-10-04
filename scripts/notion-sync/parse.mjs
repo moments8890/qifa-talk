@@ -82,6 +82,8 @@ export function parseEventBlock(raw, overrides = {}) {
     host: publicValue(metadata.host),
     description,
     links: raw.links.filter((link) => /^https:\/\//u.test(link.href)),
+    posterUrl: (raw.images || []).find((image) =>
+      /^https:\/\//u.test(image.src))?.src || '',
     sourceBlockId: raw.blockId,
   };
 }
