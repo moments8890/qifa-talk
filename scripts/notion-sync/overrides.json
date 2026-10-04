@@ -1,4 +1,8 @@
 {
+  "061. 未知探索局 Unknown Club": {
+    "eventNumber": 60,
+    "reason": "Notion repeats 061 for the 10/31 and 11/1 events; preserve the established chronological sequence."
+  },
   "066. 游戏人间": {
     "eventNumber": 68,
     "reason": "Notion repeats 066 after 067; preserve display order with the next number."

@@ -10,7 +10,7 @@
 - 活动日期早于太平洋时区当天时归档为“往期活动”；当天及未来活动归入“即将开始”。
 - 只有带 `notion_sync_managed: true` 的页面会在日常同步中被修改或移除。
 - 非编号页面（例如“一起看电影”）不由同步程序管理。
-- Notion 中重复编号的 `066. 游戏人间` 通过 `scripts/notion-sync/overrides.json` 明确映射为 `068`。
+- Notion 中重复编号的 `061. 未知探索局 Unknown Club` 和 `066. 游戏人间` 通过 `scripts/notion-sync/overrides.json` 分别明确映射为 `060` 和 `068`。
 - Host 邮箱、微信号等私密预约联系方式不会写入公开网站。
 
 ## 本地同步
