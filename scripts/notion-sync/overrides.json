@@ -1,4 +1,8 @@
 {
+  "060. [返场] 第二次世界大战到底发生了什么": {
+    "eventNumber": 59,
+    "reason": "Notion shifts the 10/25 and 10/31 headings forward before repeating 061; preserve the established chronological sequence."
+  },
   "061. 未知探索局 Unknown Club": {
     "eventNumber": 60,
     "reason": "Notion repeats 061 for the 10/31 and 11/1 events; preserve the established chronological sequence."
