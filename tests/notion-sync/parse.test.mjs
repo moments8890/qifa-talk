@@ -49,6 +49,38 @@ test('classifies dates against an injected Pacific date', () => {
   assert.equal(classifyEvent('10/4/2026', '2026-10-03'), 'upcoming');
 });
 
+test('rejects impossible calendar dates', () => {
+  assert.throws(
+    () => parseEventBlock({
+      heading: '054. Invalid date',
+      text: '054. Invalid date\n时间：2/29/2026 周日',
+      links: [],
+      blockId: 'bad-date',
+    }),
+    /invalid date.*2\/29\/2026/u,
+  );
+});
+
+test('omits optional placeholders and derives a factual fallback title', () => {
+  const event = parseEventBlock({
+    heading: '065. 待定',
+    text: [
+      '065. 待定',
+      '时间：11/29/2026 周日',
+      '地点：Bellevue Library',
+      '类型：科普/讨论',
+      'Host：待定',
+      '待定',
+    ].join('\n'),
+    links: [],
+    blockId: 'event-065',
+  });
+
+  assert.equal(event.title, '科普/讨论活动');
+  assert.equal(event.host, '');
+  assert.equal(event.description, '');
+});
+
 test('rejects duplicate final event numbers', () => {
   assert.throws(
     () => normalizeEvents([
@@ -65,5 +97,15 @@ test('fails closed when extraction returns too few numbered events', () => {
       { number: 54, title: 'A', date: '10/4/2026' },
     ], { asOf: '2026-10-03', minimumCount: 60 }),
     /extracted 1 numbered events; expected at least 60/,
+  );
+});
+
+test('fails closed when the extracted event sequence has a gap', () => {
+  assert.throws(
+    () => normalizeEvents([
+      { number: 1, title: 'A', date: '10/1/2026' },
+      { number: 3, title: 'C', date: '10/3/2026' },
+    ], { asOf: '2026-10-03', minimumCount: 2 }),
+    /missing event number 002/,
   );
 });

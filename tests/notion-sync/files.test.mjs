@@ -94,6 +94,21 @@ test('moves a managed numbered event while preserving nonnumbered pages', async 
   );
 });
 
+test('refuses to delete a managed event that is absent from desired output', async () => {
+  const root = await fixtureRoot();
+  const target = path.join(root, 'qifa-talk/upcoming/054.md');
+  await writeFile(target, 'notion_sync_managed: true\nexisting\n');
+
+  await assert.rejects(
+    applyEventFiles(root, new Map(), { write: true }),
+    /refusing to remove managed event 054/u,
+  );
+  assert.equal(
+    await readFile(target, 'utf8'),
+    'notion_sync_managed: true\nexisting\n',
+  );
+});
+
 test('adopts existing numbered files only when explicitly enabled', async () => {
   const root = await fixtureRoot();
   const target = path.join(root, 'qifa-talk/past/001.md');

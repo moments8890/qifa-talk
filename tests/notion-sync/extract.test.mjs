@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import {
   assertSuccessfulResponse,
+  expandVisibleToggles,
   extractNotionEvents,
   extractPageEvents,
   retryAsync,
@@ -116,6 +117,22 @@ test('segments adjacent events even when Notion nests them in one outer column',
       rows[1].text,
       ['066. Second', '时间：11/22/2026 周日', 'Second description'].join('\n'),
     );
+  } finally {
+    await browser.close();
+  }
+});
+
+test('expands more toggles than the old fixed-pass ceiling', async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(Array.from({ length: 40 }, (_, index) =>
+      `<button aria-label="Open" onclick="this.remove()">Open ${index}</button>`,
+    ).join(''));
+
+    await expandVisibleToggles(page);
+    assert.equal(await page.getByRole('button', { name: 'Open', exact: true }).count(), 0);
   } finally {
     await browser.close();
   }

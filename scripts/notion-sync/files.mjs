@@ -92,11 +92,27 @@ export async function assertNoEventChanges(root, desired) {
   }
 }
 
-async function verifyChangesAreSafe(root, changes, adoptExisting) {
-  if (adoptExisting) return;
-
+async function verifyChangesAreSafe(
+  root,
+  changes,
+  desired,
+  { adoptExisting, allowRemoval },
+) {
   for (const change of changes) {
     if (change.action === 'create') continue;
+
+    if (change.action === 'remove-or-move') {
+      const filename = path.basename(change.path);
+      const isMove = desired.has(`${PAST_DIR}/${filename}`)
+        || desired.has(`${UPCOMING_DIR}/${filename}`);
+      if (!isMove && !allowRemoval) {
+        throw new Error(
+          `refusing to remove managed event ${filename.slice(0, 3)} without explicit approval`,
+        );
+      }
+    }
+
+    if (adoptExisting) continue;
     const current = await readFile(path.join(root, change.path), 'utf8');
     if (!current.includes(SOURCE_MARKER)) {
       throw new Error(`refusing to change unmanaged event file: ${change.path}`);
@@ -107,12 +123,15 @@ async function verifyChangesAreSafe(root, changes, adoptExisting) {
 export async function applyEventFiles(
   root,
   desired,
-  { write, adoptExisting = false },
+  { write, adoptExisting = false, allowRemoval = false },
 ) {
   const changes = await compareEventFiles(root, desired);
   if (!write) return changes;
 
-  await verifyChangesAreSafe(root, changes, adoptExisting);
+  await verifyChangesAreSafe(root, changes, desired, {
+    adoptExisting,
+    allowRemoval,
+  });
 
   for (const change of changes) {
     const absolutePath = path.join(root, change.path);

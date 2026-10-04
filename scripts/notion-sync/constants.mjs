@@ -3,5 +3,5 @@ export const NOTION_URL =
 export const TIME_ZONE = 'America/Los_Angeles';
 export const UPCOMING_DIR = 'qifa-talk/upcoming';
 export const PAST_DIR = 'qifa-talk/past';
-export const MIN_NUMBERED_EVENTS = 60;
+export const MIN_NUMBERED_EVENTS = 68;
 export const SOURCE_MARKER = 'notion_sync_managed: true';

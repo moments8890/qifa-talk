@@ -48,7 +48,7 @@ npm run sync:notion -- --write --adopt-existing
 
 ## 自动同步与发布
 
-`.github/workflows/sync-notion.yml` 每天运行一次，也可在 GitHub Actions 中手动触发。工作流依次执行测试、内容同步、同一次提取结果的本地幂等检查和 Jekyll 构建；全部成功后才提交活动文件。它不会为了幂等检查立即再次请求 Notion。提交到 `main` 后，现有 GitHub Pages 工作流负责部署网站。
+`.github/workflows/sync-notion.yml` 每天运行一次，也可在 GitHub Actions 中手动触发。工作流固定检出 `main`，依次执行测试、内容同步、同一次提取结果的本地幂等检查和 Jekyll 构建；全部成功后才提交活动文件。它不会为了幂等检查立即再次请求 Notion。由于 GitHub Actions 机器人提交不会再次触发普通 `push` 工作流，同一个同步任务会直接上传并部署刚验证过的 `_site`；普通人工提交仍由现有 GitHub Pages 工作流部署。
 
 旧的自动归档工作流已改为仅手动触发，避免与 Notion 同步同时修改活动目录。
 

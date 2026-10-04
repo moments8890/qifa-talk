@@ -61,23 +61,35 @@ async function fullyLoad(page, minimumNumberedEvents) {
   );
 }
 
-async function expandVisibleToggles(page) {
-  for (let pass = 0; pass < 4; pass += 1) {
+export async function expandVisibleToggles(page) {
+  for (let clickCount = 0; clickCount < 500; clickCount += 1) {
     const buttons = page.getByRole('button', { name: 'Open', exact: true });
     const count = await buttons.count();
-    let clicked = 0;
+    if (count === 0) return;
+
+    let foundVisible = false;
+    let lastError = null;
 
     for (let index = 0; index < count; index += 1) {
       const button = buttons.nth(index);
       if (await button.isVisible().catch(() => false)) {
-        await button.click({ timeout: 2_000 }).catch(() => {});
-        clicked += 1;
+        foundVisible = true;
+        try {
+          await button.click({ timeout: 2_000 });
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+        }
       }
     }
 
-    if (clicked === 0) break;
-    await page.waitForTimeout(250);
+    if (!foundVisible) return;
+    if (lastError) throw lastError;
+    await page.waitForTimeout(50);
   }
+
+  throw new Error('refusing to expand more than 500 Notion toggles');
 }
 
 export async function extractPageEvents(page) {
