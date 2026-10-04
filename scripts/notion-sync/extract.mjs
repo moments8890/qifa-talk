@@ -92,11 +92,84 @@ export async function expandVisibleToggles(page) {
   throw new Error('refusing to expand more than 500 Notion toggles');
 }
 
-export async function extractPageEvents(page) {
+export async function hydrateEventImages(
+  page,
+  { delayMs = 80, imageWaitMs = 2_000 } = {},
+) {
+  const headings = page.locator('.notion-column-block h3');
+  const count = await headings.count();
+  const snapshots = Array.from({ length: count }, () => []);
+  const pageHasImages = await page.locator('img[src]').count() > 0;
+
+  for (let index = 0; index < count; index += 1) {
+    const heading = headings.nth(index);
+    const text = await heading.textContent().catch(() => '');
+    if (!/^\d{3}\./u.test(text?.trim() || '')) continue;
+    await heading.scrollIntoViewIfNeeded();
+    if (delayMs > 0) await page.waitForTimeout(delayMs);
+    const deadline = Date.now() + (pageHasImages ? imageWaitMs : 0);
+    do {
+      snapshots[index] = await heading.evaluate((currentHeading) => {
+        const allHeadings = Array.from(
+          document.querySelectorAll('.notion-column-block h3'),
+        );
+        const headingIndex = allHeadings.indexOf(currentHeading);
+        const nextHeading = allHeadings[headingIndex + 1];
+        const range = document.createRange();
+        range.setStartBefore(currentHeading);
+        if (nextHeading) range.setEndBefore(nextHeading);
+        else range.setEndAfter(document.body.lastChild);
+
+        const allImages = Array.from(document.querySelectorAll('img[src]'));
+        let containerImages = [];
+        for (
+          let ancestor = currentHeading.parentElement;
+          ancestor && ancestor !== document.body;
+          ancestor = ancestor.parentElement
+        ) {
+          const numberedHeadings = Array.from(ancestor.querySelectorAll('h3'))
+            .filter((candidate) => /^\d{3}\./u.test(candidate.textContent.trim()));
+          if (numberedHeadings.length > 1) break;
+          if (numberedHeadings.length === 1) {
+            containerImages = allImages.filter((image) => ancestor.contains(image));
+            if (containerImages.length > 0) break;
+          }
+        }
+        const rangeImages = allImages
+          .filter((image) => {
+            try {
+              return range.intersectsNode(image);
+            } catch {
+              return false;
+            }
+          })
+          .map((image) => ({
+            alt: image.alt || '',
+            src: image.currentSrc || image.src,
+          }))
+          .filter((image) => /^https:\/\//u.test(image.src));
+        const normalizedContainerImages = containerImages.map((image) => ({
+          alt: image.alt || '',
+          src: image.currentSrc || image.src,
+        })).filter((image) => /^https:\/\//u.test(image.src));
+        return [...normalizedContainerImages, ...rangeImages]
+          .filter((image, imageIndex, images) =>
+            images.findIndex((candidate) => candidate.src === image.src) === imageIndex);
+      });
+      if (snapshots[index].length > 0 || Date.now() >= deadline) break;
+      await page.waitForTimeout(100);
+    } while (true);
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  return snapshots;
+}
+
+export async function extractPageEvents(page, hydratedImages = []) {
   return page.locator('.notion-column-block h3').evaluateAll((headings) => {
     const allLinks = Array.from(document.querySelectorAll('a[href]'));
+    const allImages = Array.from(document.querySelectorAll('img[src]'));
     const finalNode = document.body.lastChild;
-
     return headings.map((heading, index) => {
       const nextHeading = headings[index + 1];
       const range = document.createRange();
@@ -113,6 +186,28 @@ export async function extractPageEvents(page) {
 
       const block = heading.closest('[data-block-id]')
         || heading.closest('.notion-column-block');
+      let containerImages = [];
+      for (
+        let ancestor = heading.parentElement;
+        ancestor && ancestor !== document.body;
+        ancestor = ancestor.parentElement
+      ) {
+        const numberedHeadings = Array.from(ancestor.querySelectorAll('h3'))
+          .filter((candidate) => /^\d{3}\./u.test(candidate.textContent.trim()));
+        if (numberedHeadings.length > 1) break;
+        if (numberedHeadings.length === 1) {
+          containerImages = allImages.filter((image) => ancestor.contains(image));
+          if (containerImages.length > 0) break;
+        }
+      }
+      const rangeImages = allImages
+        .filter((candidate) => {
+          try {
+            return range.intersectsNode(candidate);
+          } catch {
+            return false;
+          }
+        });
       return {
         heading: heading.textContent.trim(),
         text,
@@ -123,9 +218,26 @@ export async function extractPageEvents(page) {
             text: link.textContent.trim(),
             href: link.href,
           })),
+        images: [
+          ...containerImages,
+          ...rangeImages,
+        ]
+          .filter(Boolean)
+          .map((image) => ({
+            alt: image.alt || '',
+            src: image.currentSrc || image.src,
+          }))
+          .filter((image) => /^https:\/\//u.test(image.src))
+          .filter((image, imageIndex, images) =>
+            images.findIndex((candidate) => candidate.src === image.src) === imageIndex),
       };
     });
-  });
+  }).then((events) => events.map((event, index) => ({
+    ...event,
+    images: [...event.images, ...(hydratedImages[index] || [])]
+      .filter((image, imageIndex, images) =>
+        images.findIndex((candidate) => candidate.src === image.src) === imageIndex),
+  })));
 }
 
 async function extractNotionEventsOnce(
@@ -149,8 +261,9 @@ async function extractNotionEventsOnce(
     await fullyLoad(page, minimumNumberedEvents);
     await expandVisibleToggles(page);
     await fullyLoad(page, minimumNumberedEvents);
+    const hydratedImages = await hydrateEventImages(page);
 
-    return await extractPageEvents(page);
+    return await extractPageEvents(page, hydratedImages);
   } finally {
     await browser.close();
   }

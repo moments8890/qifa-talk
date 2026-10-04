@@ -45,6 +45,7 @@ test('parses a numbered heading and metadata', () => {
       '边走边聊 Ballard 的历史和移民文化。',
     ].join('\n'),
     links: [],
+    images: [{ src: 'https://zhz1208.notion.site/image/054.jpg', alt: '' }],
     blockId: 'block-054',
   });
 
@@ -56,6 +57,23 @@ test('parses a numbered heading and metadata', () => {
   assert.equal(event.type, '沉浸式体验');
   assert.equal(event.host, 'Lay & 老魏');
   assert.equal(event.description, '边走边聊 Ballard 的历史和移民文化。');
+  assert.equal(event.posterUrl, 'https://zhz1208.notion.site/image/054.jpg');
+});
+
+test('rejects ambiguous multiple poster candidates for one event', () => {
+  assert.throws(
+    () => parseEventBlock({
+      heading: '054. Poster ambiguity',
+      text: '054. Poster ambiguity\n时间：10/4/2026 周日',
+      links: [],
+      images: [
+        { src: 'https://zhz1208.notion.site/image/a.jpg', alt: '' },
+        { src: 'https://zhz1208.notion.site/image/b.jpg', alt: '' },
+      ],
+      blockId: 'block-054',
+    }),
+    /event 054 has ambiguous poster candidates/u,
+  );
 });
 
 test('ignores unnumbered candidates', () => {

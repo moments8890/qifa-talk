@@ -14,6 +14,7 @@ import {
 } from './constants.mjs';
 
 const MANAGED_PATH_RE = /^qifa-talk\/(?:past|upcoming)\/\d{3}\.md$/u;
+const MANAGED_POSTER_PATH_RE = /^assets\/images\/\d{3}\.jpg$/u;
 
 export function buildDesiredFiles(events) {
   return new Map(events.map((event) => {
@@ -23,9 +24,9 @@ export function buildDesiredFiles(events) {
   }));
 }
 
-async function readOptional(filename) {
+async function readOptional(filename, encoding) {
   try {
-    return await readFile(filename, 'utf8');
+    return await readFile(filename, encoding);
   } catch (error) {
     if (error.code === 'ENOENT') return null;
     throw error;
@@ -48,11 +49,16 @@ async function numberedFiles(root, directory) {
 
 function validateDesired(desired) {
   for (const [relativePath, content] of desired) {
-    if (!MANAGED_PATH_RE.test(relativePath)) {
+    const isEvent = MANAGED_PATH_RE.test(relativePath);
+    const isPoster = MANAGED_POSTER_PATH_RE.test(relativePath);
+    if (!isEvent && !isPoster) {
       throw new Error(`refusing invalid managed event path: ${relativePath}`);
     }
-    if (typeof content !== 'string') {
+    if (isEvent && typeof content !== 'string') {
       throw new TypeError(`event content must be a string: ${relativePath}`);
+    }
+    if (isPoster && !Buffer.isBuffer(content)) {
+      throw new TypeError(`poster content must be a Buffer: ${relativePath}`);
     }
   }
 }
@@ -66,8 +72,14 @@ export async function compareEventFiles(root, desired) {
   const changes = [];
 
   for (const [relativePath, content] of desired) {
-    const current = await readOptional(path.join(root, relativePath));
-    if (current !== content) {
+    const current = await readOptional(
+      path.join(root, relativePath),
+      typeof content === 'string' ? 'utf8' : undefined,
+    );
+    const matches = Buffer.isBuffer(content)
+      ? current?.equals(content)
+      : current === content;
+    if (!matches) {
       changes.push({
         action: current === null ? 'create' : 'update',
         path: relativePath,
@@ -100,6 +112,8 @@ async function verifyChangesAreSafe(
 ) {
   for (const change of changes) {
     if (change.action === 'create') continue;
+
+    if (MANAGED_POSTER_PATH_RE.test(change.path)) continue;
 
     if (change.action === 'remove-or-move') {
       const filename = path.basename(change.path);
@@ -142,7 +156,12 @@ export async function applyEventFiles(
 
     await mkdir(path.dirname(absolutePath), { recursive: true });
     const temporaryPath = `${absolutePath}.${process.pid}.tmp`;
-    await writeFile(temporaryPath, desired.get(change.path), 'utf8');
+    const content = desired.get(change.path);
+    await writeFile(
+      temporaryPath,
+      content,
+      typeof content === 'string' ? 'utf8' : undefined,
+    );
     await rename(temporaryPath, absolutePath);
   }
 

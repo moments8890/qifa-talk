@@ -19,6 +19,7 @@ async function fixtureRoot() {
   const root = await mkdtemp(path.join(tmpdir(), 'qifa-notion-'));
   await mkdir(path.join(root, 'qifa-talk/upcoming'), { recursive: true });
   await mkdir(path.join(root, 'qifa-talk/past'), { recursive: true });
+  await mkdir(path.join(root, 'assets/images'), { recursive: true });
   return root;
 }
 
@@ -134,5 +135,23 @@ test('verifies a write is idempotent without refetching the source', async () =>
     /not idempotent.*054\.md/u,
   );
   await applyEventFiles(root, desired, { write: true });
+  await assert.doesNotReject(assertNoEventChanges(root, desired));
+});
+
+test('updates managed poster JPEGs as binary files without adopting event pages', async () => {
+  const root = await fixtureRoot();
+  const target = path.join(root, 'assets/images/007.jpg');
+  const replacement = Buffer.from([0xff, 0xd8, 0xff, 0xd9]);
+  await writeFile(target, Buffer.from([0xff, 0xd8, 0x00, 0xd9]));
+
+  const desired = new Map([
+    ['assets/images/007.jpg', replacement],
+  ]);
+  const changes = await applyEventFiles(root, desired, { write: true });
+
+  assert.deepEqual(changes, [
+    { action: 'update', path: 'assets/images/007.jpg' },
+  ]);
+  assert.deepEqual(await readFile(target), replacement);
   await assert.doesNotReject(assertNoEventChanges(root, desired));
 });
