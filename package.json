@@ -1,0 +1,15 @@
+{
+  "name": "qifa-talk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/notion-sync/*.test.mjs",
+    "sync:notion": "node scripts/notion-sync/sync.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  },
+  "engines": {
+    "node": ">=20 <21"
+  }
+}
