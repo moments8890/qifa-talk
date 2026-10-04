@@ -1,3 +1,7 @@
 .DS_Store
 .cursor/
-
+.gstack/
+_site/
+node_modules/
+playwright-report/
+test-results/
