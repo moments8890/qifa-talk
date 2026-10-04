@@ -2,9 +2,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import {
+  assertSuccessfulResponse,
   extractNotionEvents,
   extractPageEvents,
 } from '../../scripts/notion-sync/extract.mjs';
+
+test('fails fast when the source responds with an HTTP error', () => {
+  assert.throws(
+    () => assertSuccessfulResponse({ status: () => 429 }),
+    /HTTP 429/,
+  );
+  assert.doesNotThrow(
+    () => assertSuccessfulResponse({ status: () => 200 }),
+  );
+});
 
 test('extracts event columns and their links from a Notion-shaped page', async () => {
   const browser = await chromium.launch({ headless: true });

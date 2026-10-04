@@ -2,6 +2,13 @@ import { chromium } from 'playwright';
 
 const LOAD_TIMEOUT_MS = 60_000;
 
+export function assertSuccessfulResponse(response) {
+  const status = response?.status();
+  if (status >= 400) {
+    throw new Error(`Notion source responded with HTTP ${status}`);
+  }
+}
+
 async function fullyLoad(page, minimumNumberedEvents) {
   let previousCount = -1;
   let stablePasses = 0;
@@ -76,10 +83,11 @@ export async function extractNotionEvents(
 
   try {
     const page = await browser.newPage({ locale: 'en-US' });
-    await page.goto(url, {
+    const response = await page.goto(url, {
       waitUntil: 'domcontentloaded',
       timeout: LOAD_TIMEOUT_MS,
     });
+    assertSuccessfulResponse(response);
     await page.locator('.notion-column-block h3').first().waitFor({
       state: 'visible',
       timeout: LOAD_TIMEOUT_MS,
