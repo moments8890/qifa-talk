@@ -62,23 +62,50 @@ test('ignores unnumbered candidates', () => {
   assert.equal(parseHeading('0XX. 在水下呼吸'), null);
 });
 
-test('applies the reviewed duplicate-number overrides', () => {
+test('applies the reviewed 69-event sequence overrides', () => {
   const overrides = JSON.parse(readFileSync(
     new URL('../../scripts/notion-sync/overrides.json', import.meta.url),
     'utf8',
   ));
 
+  const currentHeadings = [
+    '057. 从相对论的角度聊聊时间的真相',
+    '058. 《红楼梦》里的人、诗和游戏',
+    '059. 我的中美甲状腺癌治疗经历',
+    '060. [返场] 第二次世界大战到底发生了什么',
+    '061. 未知探索局 Unknown Club',
+    '061. 来聊聊食物浪费',
+    '062. 新手爸妈预告',
+    '063. 欢迎各位大法官：模拟美国宪法法庭',
+    '064. 美国文学赏析——从浪漫主义到现实主义',
+    '065. 待定',
+    '066. Life Coach 大揭秘',
+    '067. 从被规划到自我规划：从Chinatown的变化看尽美国城市规划中少数族裔权力的不公和演变',
+    '066. 游戏人间',
+  ];
   assert.deepEqual(
-    parseHeading('060. [返场] 第二次世界大战到底发生了什么', overrides),
-    { number: 59, title: '[返场] 第二次世界大战到底发生了什么' },
+    currentHeadings.map((heading) => parseHeading(heading, overrides).number),
+    Array.from({ length: 13 }, (_, index) => index + 57),
+  );
+
+  assert.deepEqual(
+    parseHeading('061. 来聊聊食物浪费', overrides),
+    { number: 62, title: '来聊聊食物浪费' },
   );
   assert.deepEqual(
-    parseHeading('061. 未知探索局 Unknown Club', overrides),
-    { number: 60, title: '未知探索局 Unknown Club' },
+    parseHeading('065. 待定', overrides),
+    { number: 66, title: '待定' },
+  );
+  assert.deepEqual(
+    parseHeading('067. 从被规划到自我规划：从Chinatown的变化看尽美国城市规划中少数族裔权力的不公和演变', overrides),
+    {
+      number: 68,
+      title: '从被规划到自我规划：从Chinatown的变化看尽美国城市规划中少数族裔权力的不公和演变',
+    },
   );
   assert.deepEqual(
     parseHeading('066. 游戏人间', overrides),
-    { number: 68, title: '游戏人间' },
+    { number: 69, title: '游戏人间' },
   );
 });
 
