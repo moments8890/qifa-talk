@@ -12,8 +12,10 @@ export function parseHeading(value, overrides = {}) {
   const text = value.trim();
   const match = text.match(HEADING_RE);
   if (!match) return null;
+  const normalizedHeading = `${match[1]}. ${match[2].trim()}`;
+  const override = overrides[text] || overrides[normalizedHeading];
   return {
-    number: overrides[text]?.eventNumber ?? Number(match[1]),
+    number: override?.eventNumber ?? Number(match[1]),
     title: match[2].trim(),
   };
 }
