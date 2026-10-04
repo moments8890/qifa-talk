@@ -91,6 +91,20 @@ export function classifyEvent(date, asOf) {
   return key < asOfKey ? 'past' : 'upcoming';
 }
 
+export function buildPublicSourceInventory(rawRecords, parsedEvents) {
+  return rawRecords.flatMap((raw, index) => {
+    const parsed = parsedEvents[index];
+    if (!parsed) return [];
+    return [{
+      heading: raw.heading,
+      resolvedNumber: parsed.number,
+      title: parsed.title,
+      date: parsed.date,
+      sourceBlockId: parsed.sourceBlockId,
+    }];
+  });
+}
+
 export function normalizeEvents(events, { asOf, minimumCount }) {
   const filtered = events.filter(Boolean);
   const seen = new Map();

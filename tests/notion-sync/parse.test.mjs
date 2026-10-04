@@ -2,11 +2,35 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
+  buildPublicSourceInventory,
   classifyEvent,
   normalizeEvents,
   parseEventBlock,
   parseHeading,
 } from '../../scripts/notion-sync/parse.mjs';
+
+test('builds failure diagnostics from public event fields only', () => {
+  const inventory = buildPublicSourceInventory(
+    [{ heading: '059. Public title' }],
+    [{
+      number: 58,
+      title: 'Public title',
+      date: '10/23/2026',
+      sourceBlockId: 'block-58',
+      host: 'private contact',
+      description: 'not needed for diagnostics',
+      links: [{ href: 'https://private.example' }],
+    }],
+  );
+
+  assert.deepEqual(inventory, [{
+    heading: '059. Public title',
+    resolvedNumber: 58,
+    title: 'Public title',
+    date: '10/23/2026',
+    sourceBlockId: 'block-58',
+  }]);
+});
 
 test('parses a numbered heading and metadata', () => {
   const event = parseEventBlock({

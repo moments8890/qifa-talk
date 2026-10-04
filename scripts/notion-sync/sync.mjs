@@ -15,7 +15,11 @@ import {
   assertNoEventChanges,
   buildDesiredFiles,
 } from './files.mjs';
-import { normalizeEvents, parseEventBlock } from './parse.mjs';
+import {
+  buildPublicSourceInventory,
+  normalizeEvents,
+  parseEventBlock,
+} from './parse.mjs';
 import { renderEvent } from './render.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -30,10 +34,20 @@ const rawRecords = await extractNotionEvents(url, {
   minimumNumberedEvents: MIN_NUMBERED_EVENTS,
 });
 const parsedEvents = rawRecords.map((record) => parseEventBlock(record, overrides));
-const events = normalizeEvents(parsedEvents, {
-  asOf,
-  minimumCount: MIN_NUMBERED_EVENTS,
-});
+let events;
+try {
+  events = normalizeEvents(parsedEvents, {
+    asOf,
+    minimumCount: MIN_NUMBERED_EVENTS,
+  });
+} catch (error) {
+  console.error(
+    `Public Notion source inventory: ${JSON.stringify(
+      buildPublicSourceInventory(rawRecords, parsedEvents),
+    )}`,
+  );
+  throw error;
+}
 const renderedEvents = events.map((event) => ({
   ...event,
   markdown: renderEvent(event),
