@@ -13,7 +13,7 @@ The workflow must keep candidate contact information private, preserve an approv
 - Host submissions are candidates, not public events.
 - Operations must confirm a candidate before it receives an official event number or appears on GitHub Pages.
 - Host-provided candidate content is authoritative, subject to operations confirmation.
-- Notion is a read-only historical/backfill source. The new workflow does not write to or depend on Notion after migration.
+- Notion is a read-only transitional source. A repeatable importer keeps the current site synchronized until the host-input workflow becomes authoritative; the importer is then disabled.
 - Candidates choose only from operations-approved, currently available Sundays.
 - Selecting a date places an immediate temporary hold so another candidate cannot select it.
 - Posters are created and uploaded manually by operations for the initial release. Automatic poster generation may replace that step later without changing downstream interfaces.
@@ -40,7 +40,8 @@ Operations poster folder
   -> Jekyll public assets
 
 Notion public page
-  -> one-time historical backfill only
+  -> transitional read-only importer
+  -> Jekyll event content until host-input cutover
 ```
 
 Google Workspace owns candidate intake, private contact data, reservation state, coordination-sheet updates, and confirmed event records. GitHub owns the static-site generator, templates, validation code, deployment workflow, and public output. GitHub Actions reads a separate public-source Events spreadsheet and the poster folder through a narrowly scoped, read-only service account.
@@ -204,13 +205,13 @@ Upcoming versus past classification is derived from the event end timestamp in A
 
 Synchronization is idempotent: repeated runs with the same source revision produce the same public output and do not duplicate spreadsheet rows. A failure preserves the last successfully deployed site.
 
-## Notion Backfill
+## Transitional Notion Backfill and Sync
 
-The public Notion page is used once to populate historical/reference events 001–067. The importer extracts the best available public fields and preserves useful public links and notes where practical.
+The public Notion page initially populates historical/reference events 001–067 and remains a temporary read-only source until the host-input workflow is deployed. The importer extracts the best available public fields and preserves useful public links and notes where practical.
 
 The duplicate public number `066` must be resolved during migration before any new number is assigned. Backfilled placeholders and inconsistent values are normalized or omitted; they do not become new schema requirements.
 
-The backfill is reviewed through a dry-run diff against the current repository and Notion page before it becomes the initial Published Events dataset. After acceptance, routine synchronization does not read or write Notion.
+The first backfill is reviewed through a dry-run diff against the current repository and Notion page. After acceptance, the same deterministic importer runs manually and on a daily schedule to keep GitHub Pages current. It never writes to Notion. The schedule is disabled at host-input cutover, after a final comparison confirms that Published Events contains every still-relevant Notion event.
 
 ## Error Handling
 
