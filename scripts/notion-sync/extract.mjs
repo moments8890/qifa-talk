@@ -2,21 +2,33 @@ import { chromium } from 'playwright';
 
 const LOAD_TIMEOUT_MS = 60_000;
 
-async function fullyLoad(page) {
-  let previousHeight = 0;
+async function fullyLoad(page, minimumNumberedEvents) {
+  let previousCount = -1;
   let stablePasses = 0;
+  const deadline = Date.now() + LOAD_TIMEOUT_MS;
 
-  for (let pass = 0; pass < 80 && stablePasses < 3; pass += 1) {
-    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  while (Date.now() < deadline) {
+    const count = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.notion-column-block h3'))
+        .filter((heading) => /^\d{3}\./u.test(heading.textContent.trim()))
+        .length,
+    );
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(250);
 
-    if (height === previousHeight) stablePasses += 1;
+    if (count === previousCount) stablePasses += 1;
     else stablePasses = 0;
-    previousHeight = height;
+    previousCount = count;
+
+    if (count >= minimumNumberedEvents && stablePasses >= 4) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      return;
+    }
   }
 
-  await page.evaluate(() => window.scrollTo(0, 0));
+  throw new Error(
+    `Notion loaded ${previousCount} numbered events; expected at least ${minimumNumberedEvents}`,
+  );
 }
 
 async function expandVisibleToggles(page) {
@@ -56,7 +68,10 @@ export async function extractPageEvents(page) {
   );
 }
 
-export async function extractNotionEvents(url, { headless = true } = {}) {
+export async function extractNotionEvents(
+  url,
+  { headless = true, minimumNumberedEvents = 1 } = {},
+) {
   const browser = await chromium.launch({ headless });
 
   try {
@@ -70,9 +85,9 @@ export async function extractNotionEvents(url, { headless = true } = {}) {
       timeout: LOAD_TIMEOUT_MS,
     });
 
-    await fullyLoad(page);
+    await fullyLoad(page, minimumNumberedEvents);
     await expandVisibleToggles(page);
-    await fullyLoad(page);
+    await fullyLoad(page, minimumNumberedEvents);
 
     return await extractPageEvents(page);
   } finally {

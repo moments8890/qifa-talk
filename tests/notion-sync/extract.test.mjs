@@ -58,3 +58,25 @@ test('finishes page extraction before closing the browser', async () => {
   const rows = await extractNotionEvents(`data:text/html;charset=utf-8;base64,${html}`);
   assert.equal(rows[0].heading, '001. 生命周期测试');
 });
+
+test('waits for the required numbered records to finish lazy loading', async () => {
+  const html = Buffer.from(`
+    <div id="events">
+      <div class="notion-column-block"><h3>001. First</h3></div>
+    </div>
+    <script>
+      setTimeout(() => {
+        document.querySelector('#events').insertAdjacentHTML(
+          'beforeend',
+          '<div class="notion-column-block"><h3>002. Second</h3></div>',
+        );
+      }, 2500);
+    </script>
+  `).toString('base64');
+
+  const rows = await extractNotionEvents(
+    `data:text/html;charset=utf-8;base64,${html}`,
+    { minimumNumberedEvents: 2 },
+  );
+  assert.deepEqual(rows.map((row) => row.heading), ['001. First', '002. Second']);
+});
