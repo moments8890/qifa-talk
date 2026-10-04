@@ -114,10 +114,10 @@ permalink: /
 <div class="section-header"><div class="section-header-line"></div><div class="section-header-text">📣 如何参与</div><div class="section-header-line"></div></div>
 
 <div class="grid-2">
-  <a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener" class="card-btn">
-    <div class="card-icon">📕</div>
-    <div class="card-title">关注小红书</div>
-    <div class="card-desc">点击查看我们的小红书帖子</div>
+  <a href="{{ '/join/' | relative_url }}" class="card-btn">
+    <div class="card-icon">💬</div>
+    <div class="card-title">加入微信群</div>
+    <div class="card-desc">扫描二维码加入启发说</div>
   </a>
   <div class="card">
     <div class="card-icon">📅</div>
