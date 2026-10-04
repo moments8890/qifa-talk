@@ -157,35 +157,6 @@ test('associates a poster in a sibling column before the event heading', async (
   }
 });
 
-test('pairs headings with posters stored in a parallel Notion column', async () => {
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-
-  try {
-    await page.setContent(`
-      <div class="notion-column_list-block">
-        <div class="notion-column-block" data-block-id="event-text">
-          <h3>003. Third</h3>
-          <h3>002. Second</h3>
-          <h3>001. First</h3>
-        </div>
-        <div class="notion-column-block" data-block-id="event-posters">
-          <img src="https://zhz1208.notion.site/image/003.jpg" alt="003 poster">
-        </div>
-      </div>
-    `);
-
-    const rows = await extractPageEvents(page);
-    assert.deepEqual(rows.map((row) => row.images), [
-      [{ alt: '003 poster', src: 'https://zhz1208.notion.site/image/003.jpg' }],
-      [],
-      [],
-    ]);
-  } finally {
-    await browser.close();
-  }
-});
-
 test('hydrates each numbered event image before extraction', async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();

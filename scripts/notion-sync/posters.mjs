@@ -27,15 +27,61 @@ function assertAllowedPosterUrl(value) {
   return url;
 }
 
+async function fetchPoster(sourceUrl, fetchImpl) {
+  let url = sourceUrl;
+  for (let redirectCount = 0; redirectCount <= 5; redirectCount += 1) {
+    const response = await fetchImpl(url, {
+      redirect: 'manual',
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (response.status < 300 || response.status >= 400) return response;
+
+    const location = response.headers.get('location');
+    if (!location) throw new Error('Notion poster redirect has no Location header');
+    if (redirectCount === 5) {
+      throw new Error('Notion poster exceeded the redirect limit');
+    }
+    url = assertAllowedPosterUrl(new URL(location, url).href);
+  }
+  throw new Error('Notion poster redirect loop ended unexpectedly');
+}
+
+async function readPosterBody(response) {
+  const contentLength = Number(response.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_SOURCE_BYTES) {
+    throw new Error('poster source exceeds the 20 MB limit');
+  }
+
+  if (!response.body?.getReader) {
+    const source = Buffer.from(await response.arrayBuffer());
+    if (source.length > MAX_SOURCE_BYTES) {
+      throw new Error('poster source exceeds the 20 MB limit');
+    }
+    return source;
+  }
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let size = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_SOURCE_BYTES) {
+      await reader.cancel();
+      throw new Error('poster source exceeds the 20 MB limit');
+    }
+    chunks.push(Buffer.from(value));
+  }
+  return Buffer.concat(chunks, size);
+}
+
 export async function downloadPoster(
   event,
   { fetchImpl = fetch } = {},
 ) {
   const sourceUrl = assertAllowedPosterUrl(event.posterUrl);
-  const response = await fetchImpl(sourceUrl, {
-    redirect: 'follow',
-    signal: AbortSignal.timeout(30_000),
-  });
+  const response = await fetchPoster(sourceUrl, fetchImpl);
   if (!response.ok) {
     throw new Error(
       `poster for event ${String(event.number).padStart(3, '0')} responded with HTTP ${response.status}`,
@@ -50,8 +96,8 @@ export async function downloadPoster(
     );
   }
 
-  const source = Buffer.from(await response.arrayBuffer());
-  if (source.length === 0 || source.length > MAX_SOURCE_BYTES) {
+  const source = await readPosterBody(response);
+  if (source.length === 0) {
     throw new Error(
       `poster for event ${String(event.number).padStart(3, '0')} has an invalid size`,
     );

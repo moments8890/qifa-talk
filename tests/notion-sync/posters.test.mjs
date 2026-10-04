@@ -45,17 +45,56 @@ test('refuses poster URLs outside the public Notion image proxy', async () => {
 });
 
 test('allows redirects to the official Notion image CDN', async () => {
+  const requested = [];
   const poster = await downloadPoster({
     number: 7,
     posterUrl: 'https://zhz1208.notion.site/image/poster.png',
   }, {
-    fetchImpl: async () => imageResponse(
-      PNG_1X1,
-      'https://img.notionusercontent.com/s3/poster.png',
-    ),
+    fetchImpl: async (url) => {
+      requested.push(url.href || String(url));
+      if (requested.length === 1) {
+        return {
+          ok: false,
+          status: 302,
+          url: requested[0],
+          headers: new Headers({
+            location: 'https://img.notionusercontent.com/s3/poster.png',
+          }),
+        };
+      }
+      return imageResponse(PNG_1X1, requested[1]);
+    },
   });
 
   assert.equal(poster.path, 'assets/images/007.jpg');
+  assert.deepEqual(requested, [
+    'https://zhz1208.notion.site/image/poster.png',
+    'https://img.notionusercontent.com/s3/poster.png',
+  ]);
+});
+
+test('never requests a disallowed redirect target', async () => {
+  const requested = [];
+  await assert.rejects(
+    downloadPoster({
+      number: 7,
+      posterUrl: 'https://zhz1208.notion.site/image/poster.png',
+    }, {
+      fetchImpl: async (url) => {
+        requested.push(url.href || String(url));
+        return {
+          ok: false,
+          status: 302,
+          url: requested[0],
+          headers: new Headers({ location: 'http://127.0.0.1/private' }),
+        };
+      },
+    }),
+    /unsupported Notion poster URL/u,
+  );
+  assert.deepEqual(requested, [
+    'https://zhz1208.notion.site/image/poster.png',
+  ]);
 });
 
 test('fails closed when any event has no poster', async () => {
@@ -65,19 +104,19 @@ test('fails closed when any event has no poster', async () => {
   );
 });
 
-test('allows only the verified events without Notion posters', async () => {
-  const posters = await downloadPosters([
-    { number: 1, title: 'Legacy one', posterUrl: '' },
-    { number: 2, title: 'Legacy two', posterUrl: '' },
-    { number: 38, title: 'Legacy 38', posterUrl: '' },
-    { number: 48, title: 'Legacy 48', posterUrl: '' },
-    { number: 66, title: 'Upcoming placeholder', posterUrl: '' },
-    { number: 3, title: 'With poster', posterUrl: 'https://zhz1208.notion.site/image/003.png' },
-  ], { fetchImpl: async () => imageResponse() });
+test('allows exactly the seven verified events without Notion posters', async () => {
+  for (const number of [1, 2, 3, 4, 38, 48, 66]) {
+    await assert.doesNotReject(
+      downloadPosters([{ number, title: 'Verified gap', posterUrl: '' }]),
+    );
+  }
 
-  assert.deepEqual(posters.map((poster) => poster.path), [
-    'assets/images/003.jpg',
-  ]);
+  for (const number of [5, 37, 39, 47, 49, 65, 67]) {
+    await assert.rejects(
+      downloadPosters([{ number, title: 'Not exempt', posterUrl: '' }]),
+      new RegExp(`event ${String(number).padStart(3, '0')} has no Notion poster`, 'u'),
+    );
+  }
 });
 
 test('builds desired poster files from downloaded assets', () => {

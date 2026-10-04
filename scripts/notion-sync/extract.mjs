@@ -170,38 +170,6 @@ export async function extractPageEvents(page, hydratedImages = []) {
     const allLinks = Array.from(document.querySelectorAll('a[href]'));
     const allImages = Array.from(document.querySelectorAll('img[src]'));
     const finalNode = document.body.lastChild;
-    const numberedHeadings = headings.filter((heading) =>
-      /^\d{3}\./u.test(heading.textContent.trim()));
-    const parallelImagesByHeading = new Map();
-    const parallelImageColumns = new Set();
-    const columnLists = Array.from(new Set(numberedHeadings
-      .map((heading) => heading.closest('.notion-column_list-block'))
-      .filter(Boolean)));
-
-    for (const columnList of columnLists) {
-      const listHeadings = numberedHeadings.filter((heading) =>
-        columnList.contains(heading));
-      const imageColumn = Array.from(
-        columnList.querySelectorAll('.notion-column-block'),
-      )
-        .filter((column) =>
-          column.closest('.notion-column_list-block') === columnList
-          && !Array.from(column.querySelectorAll('h3'))
-            .some((heading) => /^\d{3}\./u.test(heading.textContent.trim())))
-        .sort((left, right) =>
-          right.querySelectorAll('img[src]').length
-          - left.querySelectorAll('img[src]').length)[0];
-      const columnImages = imageColumn
-        ? Array.from(imageColumn.querySelectorAll('img[src]'))
-        : [];
-      if (imageColumn) parallelImageColumns.add(imageColumn);
-      listHeadings.forEach((heading, index) => {
-        if (columnImages[index]) {
-          parallelImagesByHeading.set(heading, columnImages[index]);
-        }
-      });
-    }
-
     return headings.map((heading, index) => {
       const nextHeading = headings[index + 1];
       const range = document.createRange();
@@ -228,17 +196,12 @@ export async function extractPageEvents(page, hydratedImages = []) {
           .filter((candidate) => /^\d{3}\./u.test(candidate.textContent.trim()));
         if (numberedHeadings.length > 1) break;
         if (numberedHeadings.length === 1) {
-          containerImages = allImages.filter((image) =>
-            ancestor.contains(image)
-            && !Array.from(parallelImageColumns)
-              .some((column) => column.contains(image)));
+          containerImages = allImages.filter((image) => ancestor.contains(image));
           if (containerImages.length > 0) break;
         }
       }
       const rangeImages = allImages
         .filter((candidate) => {
-          if (Array.from(parallelImageColumns)
-            .some((column) => column.contains(candidate))) return false;
           try {
             return range.intersectsNode(candidate);
           } catch {
@@ -256,7 +219,6 @@ export async function extractPageEvents(page, hydratedImages = []) {
             href: link.href,
           })),
         images: [
-          parallelImagesByHeading.get(heading),
           ...containerImages,
           ...rangeImages,
         ]

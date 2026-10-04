@@ -43,6 +43,14 @@ function calendarKey(value) {
 export function parseEventBlock(raw, overrides = {}) {
   const heading = parseHeading(raw.heading, overrides);
   if (!heading) return null;
+  const posterUrls = Array.from(new Set((raw.images || [])
+    .map((image) => image.src)
+    .filter((src) => /^https:\/\//u.test(src))));
+  if (posterUrls.length > 1) {
+    throw new Error(
+      `event ${String(heading.number).padStart(3, '0')} has ambiguous poster candidates`,
+    );
+  }
 
   const lines = raw.text
     .split(/\r?\n/u)
@@ -82,8 +90,7 @@ export function parseEventBlock(raw, overrides = {}) {
     host: publicValue(metadata.host),
     description,
     links: raw.links.filter((link) => /^https:\/\//u.test(link.href)),
-    posterUrl: (raw.images || []).find((image) =>
-      /^https:\/\//u.test(image.src))?.src || '',
+    posterUrl: posterUrls[0] || '',
     sourceBlockId: raw.blockId,
   };
 }
