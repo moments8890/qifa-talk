@@ -10,7 +10,11 @@ import {
   TIME_ZONE,
 } from './constants.mjs';
 import { extractNotionEvents } from './extract.mjs';
-import { applyEventFiles, buildDesiredFiles } from './files.mjs';
+import {
+  applyEventFiles,
+  assertNoEventChanges,
+  buildDesiredFiles,
+} from './files.mjs';
 import { normalizeEvents, parseEventBlock } from './parse.mjs';
 import { renderEvent } from './render.mjs';
 
@@ -39,6 +43,7 @@ const changes = await applyEventFiles(root, desired, {
   write: options.write,
   adoptExisting: options.adoptExisting,
 });
+if (options.write) await assertNoEventChanges(root, desired);
 
 for (const change of changes) {
   console.log(`${change.action}: ${change.path}`);

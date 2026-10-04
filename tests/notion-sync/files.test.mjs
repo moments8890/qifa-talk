@@ -11,6 +11,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
   applyEventFiles,
+  assertNoEventChanges,
   buildDesiredFiles,
 } from '../../scripts/notion-sync/files.mjs';
 
@@ -105,4 +106,18 @@ test('adopts existing numbered files only when explicitly enabled', async () => 
   );
 
   assert.equal(await readFile(target, 'utf8'), 'notion_sync_managed: true\nnew\n');
+});
+
+test('verifies a write is idempotent without refetching the source', async () => {
+  const root = await fixtureRoot();
+  const desired = new Map([
+    ['qifa-talk/upcoming/054.md', 'notion_sync_managed: true\nnew\n'],
+  ]);
+
+  await assert.rejects(
+    assertNoEventChanges(root, desired),
+    /not idempotent.*054\.md/u,
+  );
+  await applyEventFiles(root, desired, { write: true });
+  await assert.doesNotReject(assertNoEventChanges(root, desired));
 });

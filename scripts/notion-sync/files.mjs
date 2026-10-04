@@ -84,6 +84,14 @@ export async function compareEventFiles(root, desired) {
   return changes;
 }
 
+export async function assertNoEventChanges(root, desired) {
+  const changes = await compareEventFiles(root, desired);
+  if (changes.length > 0) {
+    const paths = changes.map((change) => change.path).join(', ');
+    throw new Error(`event write is not idempotent: ${paths}`);
+  }
+}
+
 async function verifyChangesAreSafe(root, changes, adoptExisting) {
   if (adoptExisting) return;
 

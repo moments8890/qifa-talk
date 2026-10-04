@@ -40,9 +40,6 @@ jobs:
       - name: Synchronize event pages
         run: npm run sync:notion -- --write
 
-      - name: Verify synchronization is idempotent
-        run: npm run sync:notion -- --check
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -60,7 +57,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No event changes to commit."
           else
-            git commit -m "content: sync events from Notion [skip ci]"
+            git commit -m "content: sync events from Notion"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
