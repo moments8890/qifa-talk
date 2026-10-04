@@ -1,14 +1,34 @@
 {
-  "060. [返场] 第二次世界大战到底发生了什么": {
-    "eventNumber": 59,
-    "reason": "Notion shifts the 10/25 and 10/31 headings forward before repeating 061; preserve the established chronological sequence."
+  "061. 来聊聊食物浪费": {
+    "eventNumber": 62,
+    "reason": "Notion inserted event 057 and repeats 061; continue the chronological sequence."
   },
-  "061. 未知探索局 Unknown Club": {
-    "eventNumber": 60,
-    "reason": "Notion repeats 061 for the 10/31 and 11/1 events; preserve the established chronological sequence."
+  "062. 新手爸妈预告": {
+    "eventNumber": 63,
+    "reason": "Shift events after the inserted event 057 into chronological order."
+  },
+  "063. 欢迎各位大法官：模拟美国宪法法庭": {
+    "eventNumber": 64,
+    "reason": "Shift events after the inserted event 057 into chronological order."
+  },
+  "064. 美国文学赏析——从浪漫主义到现实主义": {
+    "eventNumber": 65,
+    "reason": "Shift events after the inserted event 057 into chronological order."
+  },
+  "065. 待定": {
+    "eventNumber": 66,
+    "reason": "Shift events after the inserted event 057 into chronological order."
+  },
+  "066. Life Coach 大揭秘": {
+    "eventNumber": 67,
+    "reason": "Shift events after the inserted event 057 into chronological order."
+  },
+  "067. 从被规划到自我规划：从Chinatown的变化看尽美国城市规划中少数族裔权力的不公和演变": {
+    "eventNumber": 68,
+    "reason": "Shift events after the inserted event 057 into chronological order."
   },
   "066. 游戏人间": {
-    "eventNumber": 68,
-    "reason": "Notion repeats 066 after 067; preserve display order with the next number."
+    "eventNumber": 69,
+    "reason": "Notion repeats 066 after 067; preserve chronological order with the next number."
   }
 }
