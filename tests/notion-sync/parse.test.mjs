@@ -79,7 +79,7 @@ test('applies the reviewed 69-event sequence overrides', () => {
     '063. 欢迎各位大法官：模拟美国宪法法庭',
     '064. 美国文学赏析——从浪漫主义到现实主义',
     '065. 待定',
-    '066. Life Coach 大揭秘',
+    '066.  Life Coach 大揭秘',
     '067. 从被规划到自我规划：从Chinatown的变化看尽美国城市规划中少数族裔权力的不公和演变',
     '066. 游戏人间',
   ];
