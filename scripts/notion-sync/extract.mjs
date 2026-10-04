@@ -81,21 +81,39 @@ async function expandVisibleToggles(page) {
 }
 
 export async function extractPageEvents(page) {
-  return page.locator('.notion-column-block h3').evaluateAll((headings) =>
-    headings.map((heading) => {
-      const column = heading.closest('.notion-column-block');
-      const block = column.closest('[data-block-id]') || column;
+  return page.locator('.notion-column-block h3').evaluateAll((headings) => {
+    const allLinks = Array.from(document.querySelectorAll('a[href]'));
+    const finalNode = document.body.lastChild;
+
+    return headings.map((heading, index) => {
+      const nextHeading = headings[index + 1];
+      const range = document.createRange();
+      range.setStartBefore(heading);
+      if (nextHeading) range.setEndBefore(nextHeading);
+      else range.setEndAfter(finalNode);
+
+      const scratch = document.createElement('div');
+      scratch.style.cssText = 'position:fixed;left:-100000px;opacity:0';
+      scratch.append(range.cloneContents());
+      document.body.append(scratch);
+      const text = scratch.innerText.trim();
+      scratch.remove();
+
+      const block = heading.closest('[data-block-id]')
+        || heading.closest('.notion-column-block');
       return {
         heading: heading.textContent.trim(),
-        text: column.innerText.trim(),
+        text,
         blockId: block.getAttribute('data-block-id') || '',
-        links: Array.from(column.querySelectorAll('a[href]'), (link) => ({
-          text: link.textContent.trim(),
-          href: link.href,
-        })),
+        links: allLinks
+          .filter((link) => range.intersectsNode(link))
+          .map((link) => ({
+            text: link.textContent.trim(),
+            href: link.href,
+          })),
       };
-    }),
-  );
+    });
+  });
 }
 
 async function extractNotionEventsOnce(

@@ -89,6 +89,38 @@ test('extracts event columns and their links from a Notion-shaped page', async (
   }
 });
 
+test('segments adjacent events even when Notion nests them in one outer column', async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(`
+      <div class="notion-column-block" data-block-id="outer">
+        <h3 data-block-id="event-065">065. First</h3>
+        <div>时间：8/17/2025 周日</div>
+        <div>First description</div>
+        <div class="notion-column-block" data-block-id="event-066">
+          <h3>066. Second</h3>
+          <div>时间：11/22/2026 周日</div>
+          <div>Second description</div>
+        </div>
+      </div>
+    `);
+
+    const rows = await extractPageEvents(page);
+    assert.equal(
+      rows[0].text,
+      ['065. First', '时间：8/17/2025 周日', 'First description'].join('\n'),
+    );
+    assert.equal(
+      rows[1].text,
+      ['066. Second', '时间：11/22/2026 周日', 'Second description'].join('\n'),
+    );
+  } finally {
+    await browser.close();
+  }
+});
+
 test('finishes page extraction before closing the browser', async () => {
   const html = Buffer.from(`
     <div class="notion-column-block" data-block-id="event-001">
