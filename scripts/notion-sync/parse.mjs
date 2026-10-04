@@ -110,12 +110,16 @@ export function normalizeEvents(events, { asOf, minimumCount }) {
       continue;
     }
 
-    const sourceIds = [previous.sourceBlockId, event.sourceBlockId]
-      .filter(Boolean)
-      .join(', ');
+    const publicContext = (candidate) => JSON.stringify({
+      sourceBlockId: candidate.sourceBlockId || '',
+      title: candidate.title,
+      date: candidate.date,
+      location: candidate.location || '',
+      host: candidate.host || '',
+    });
     throw new Error(
       `duplicate event number ${String(event.number).padStart(3, '0')}`
-      + (sourceIds ? ` (source blocks: ${sourceIds})` : ''),
+      + ` (${publicContext(previous)} vs ${publicContext(event)})`,
     );
   }
 

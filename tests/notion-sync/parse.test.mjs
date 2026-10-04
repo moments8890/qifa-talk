@@ -125,7 +125,7 @@ test('rejects conflicting clones even when their Notion block ID matches', () =>
         sourceBlockId: 'notion-block-1',
       },
     ], { asOf: '2026-10-03', minimumCount: 1 }),
-    /duplicate event number 001.*notion-block-1/u,
+    /duplicate event number 001.*notion-block-1.*"title":"A".*"title":"Changed"/u,
   );
 });
 
