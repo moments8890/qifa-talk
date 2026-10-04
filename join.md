@@ -10,17 +10,16 @@ permalink: /join/
 
 ---
 
-## 第一步：关注我们的小红书
+## 第一步：扫码加入微信群
 
-我们在小红书上发布活动信息和招募帖，关注后可以第一时间看到新活动。
+打开微信扫一扫，扫描下方二维码加入启发说微信群。活动通知和报名信息会在群内发布。
 
 {::nomarkdown}
-<a href="http://xhslink.com/o/7JyPChpvLds" target="_blank" rel="noopener" style="display:block;background:#fff5f5;border:2px solid #ff2442;border-radius:16px;padding:24px;text-align:center;text-decoration:none;margin:1rem 0;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(255,36,66,0.2)'" onmouseout="this.style.boxShadow='none'">
-  <div style="font-size:2rem;margin-bottom:8px;">📕</div>
-  <div style="font-size:1.05rem;font-weight:700;color:#ff2442;margin-bottom:6px;">在小红书关注我们</div>
-  <div style="font-size:0.9rem;color:#6b7280;line-height:1.6;margin-bottom:10px;">西雅图有人感兴趣一起来深度聊聊亲密关系吗 那是必须...</div>
-  <div style="display:inline-block;background:#ff2442;color:#fff;font-size:0.85rem;font-weight:600;padding:8px 20px;border-radius:999px;">打开小红书查看帖子 →</div>
-</a>
+<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:16px;padding:24px;text-align:center;margin:1rem 0;">
+  <img src="{{ '/assets/images/qifa-talk-wechat-qr.png' | relative_url }}" alt="启发说微信群二维码" style="display:block;width:100%;max-width:320px;height:auto;margin:0 auto 16px;border-radius:12px;">
+  <div style="font-size:1.05rem;font-weight:700;color:#166534;margin-bottom:6px;">打开微信扫一扫</div>
+  <div style="font-size:0.9rem;color:#4b5563;line-height:1.6;">扫描二维码加入启发说微信群</div>
+</div>
 {:/nomarkdown}
 
 ---
@@ -34,7 +33,7 @@ permalink: /join/
 | 频率 | 通常每 1–2 周一场 |
 | 时间 | 多为周末下午（2–4 pm） |
 | 地点 | 公共图书馆、公园或成员家中 |
-| 报名 | 小红书帖子内报名留言 |
+| 报名 | 微信群内发布接龙链接 |
 
 ---
 
