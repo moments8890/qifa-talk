@@ -39,7 +39,6 @@ end
 end
 
 home = layouts.fetch('home')
-abort 'Homepage hero logo is missing' unless home.include?('qifa-hero-logo')
-abort 'Homepage hero logo needs meaningful alt text' unless home.include?('alt="启发说标志"')
+abort 'Homepage hero must not repeat the navigation logo' if home.include?('qifa-hero-logo')
 
 puts 'PASS: Qifa Talk logo system is complete'
