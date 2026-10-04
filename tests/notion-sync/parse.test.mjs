@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   classifyEvent,
   normalizeEvents,
@@ -37,9 +38,18 @@ test('ignores unnumbered candidates', () => {
   assert.equal(parseHeading('0XX. 在水下呼吸'), null);
 });
 
-test('applies the reviewed duplicate-number override', () => {
+test('applies the reviewed duplicate-number overrides', () => {
+  const overrides = JSON.parse(readFileSync(
+    new URL('../../scripts/notion-sync/overrides.json', import.meta.url),
+    'utf8',
+  ));
+
   assert.deepEqual(
-    parseHeading('066. 游戏人间', { '066. 游戏人间': { eventNumber: 68 } }),
+    parseHeading('061. 未知探索局 Unknown Club', overrides),
+    { number: 60, title: '未知探索局 Unknown Club' },
+  );
+  assert.deepEqual(
+    parseHeading('066. 游戏人间', overrides),
     { number: 68, title: '游戏人间' },
   );
 });
