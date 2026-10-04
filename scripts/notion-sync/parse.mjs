@@ -93,23 +93,40 @@ export function classifyEvent(date, asOf) {
 
 export function normalizeEvents(events, { asOf, minimumCount }) {
   const filtered = events.filter(Boolean);
-  if (filtered.length < minimumCount) {
+  const seen = new Map();
+  const unique = [];
+
+  for (const event of filtered) {
+    const previous = seen.get(event.number);
+    if (!previous) {
+      seen.set(event.number, event);
+      unique.push(event);
+      continue;
+    }
+
+    const sameSourceBlock = event.sourceBlockId
+      && event.sourceBlockId === previous.sourceBlockId;
+    if (sameSourceBlock && JSON.stringify(event) === JSON.stringify(previous)) {
+      continue;
+    }
+
+    const sourceIds = [previous.sourceBlockId, event.sourceBlockId]
+      .filter(Boolean)
+      .join(', ');
     throw new Error(
-      `extracted ${filtered.length} numbered events; expected at least ${minimumCount}`,
+      `duplicate event number ${String(event.number).padStart(3, '0')}`
+      + (sourceIds ? ` (source blocks: ${sourceIds})` : ''),
     );
   }
 
-  const seen = new Set();
-  const normalized = filtered
-    .map((event) => {
-      if (seen.has(event.number)) {
-        throw new Error(
-          `duplicate event number ${String(event.number).padStart(3, '0')}`,
-        );
-      }
-      seen.add(event.number);
-      return { ...event, status: classifyEvent(event.date, asOf) };
-    })
+  if (unique.length < minimumCount) {
+    throw new Error(
+      `extracted ${unique.length} numbered events; expected at least ${minimumCount}`,
+    );
+  }
+
+  const normalized = unique
+    .map((event) => ({ ...event, status: classifyEvent(event.date, asOf) }))
     .sort((a, b) => a.number - b.number);
 
   const numbers = new Set(normalized.map((event) => event.number));

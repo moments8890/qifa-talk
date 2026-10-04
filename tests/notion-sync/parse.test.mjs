@@ -91,6 +91,44 @@ test('rejects duplicate final event numbers', () => {
   );
 });
 
+test('collapses identical render clones of the same Notion block', () => {
+  const event = {
+    number: 1,
+    title: 'A',
+    date: '10/4/2026',
+    sourceBlockId: 'notion-block-1',
+    links: [],
+  };
+
+  assert.deepEqual(
+    normalizeEvents([event, { ...event }], {
+      asOf: '2026-10-03',
+      minimumCount: 1,
+    }),
+    [{ ...event, status: 'upcoming' }],
+  );
+});
+
+test('rejects conflicting clones even when their Notion block ID matches', () => {
+  assert.throws(
+    () => normalizeEvents([
+      {
+        number: 1,
+        title: 'A',
+        date: '10/4/2026',
+        sourceBlockId: 'notion-block-1',
+      },
+      {
+        number: 1,
+        title: 'Changed',
+        date: '10/4/2026',
+        sourceBlockId: 'notion-block-1',
+      },
+    ], { asOf: '2026-10-03', minimumCount: 1 }),
+    /duplicate event number 001.*notion-block-1/u,
+  );
+});
+
 test('fails closed when extraction returns too few numbered events', () => {
   assert.throws(
     () => normalizeEvents([
