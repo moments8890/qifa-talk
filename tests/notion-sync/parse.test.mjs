@@ -45,6 +45,10 @@ test('applies the reviewed duplicate-number overrides', () => {
   ));
 
   assert.deepEqual(
+    parseHeading('060. [返场] 第二次世界大战到底发生了什么', overrides),
+    { number: 59, title: '[返场] 第二次世界大战到底发生了什么' },
+  );
+  assert.deepEqual(
     parseHeading('061. 未知探索局 Unknown Club', overrides),
     { number: 60, title: '未知探索局 Unknown Club' },
   );
