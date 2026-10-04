@@ -5,6 +5,7 @@ import {
   assertSuccessfulResponse,
   extractNotionEvents,
   extractPageEvents,
+  retryAsync,
 } from '../../scripts/notion-sync/extract.mjs';
 
 test('fails fast when the source responds with an HTTP error', () => {
@@ -15,6 +16,36 @@ test('fails fast when the source responds with an HTTP error', () => {
   assert.doesNotThrow(
     () => assertSuccessfulResponse({ status: () => 200 }),
   );
+});
+
+test('retries transient extraction failures with a bounded attempt count', async () => {
+  let attempts = 0;
+  const result = await retryAsync(
+    async () => {
+      attempts += 1;
+      if (attempts < 3) throw new Error('partial load');
+      return 'complete';
+    },
+    { attempts: 3, delayMs: 0 },
+  );
+
+  assert.equal(result, 'complete');
+  assert.equal(attempts, 3);
+});
+
+test('surfaces the final extraction failure after retries are exhausted', async () => {
+  let attempts = 0;
+  await assert.rejects(
+    retryAsync(
+      async () => {
+        attempts += 1;
+        throw new Error('still partial');
+      },
+      { attempts: 2, delayMs: 0 },
+    ),
+    /still partial/,
+  );
+  assert.equal(attempts, 2);
 });
 
 test('extracts event columns and their links from a Notion-shaped page', async () => {

@@ -9,6 +9,29 @@ export function assertSuccessfulResponse(response) {
   }
 }
 
+export async function retryAsync(
+  operation,
+  { attempts = 3, delayMs = 10_000, onRetry = () => {} } = {},
+) {
+  if (!Number.isInteger(attempts) || attempts < 1) {
+    throw new TypeError('retry attempts must be a positive integer');
+  }
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await operation(attempt);
+    } catch (error) {
+      if (attempt === attempts) throw error;
+      onRetry(error, attempt);
+      if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw new Error('retry loop ended unexpectedly');
+}
+
 async function fullyLoad(page, minimumNumberedEvents) {
   let previousCount = -1;
   let stablePasses = 0;
@@ -75,7 +98,7 @@ export async function extractPageEvents(page) {
   );
 }
 
-export async function extractNotionEvents(
+async function extractNotionEventsOnce(
   url,
   { headless = true, minimumNumberedEvents = 1 } = {},
 ) {
@@ -101,4 +124,27 @@ export async function extractNotionEvents(
   } finally {
     await browser.close();
   }
+}
+
+export async function extractNotionEvents(
+  url,
+  {
+    headless = true,
+    minimumNumberedEvents = 1,
+    retryAttempts = 3,
+    retryDelayMs = 10_000,
+  } = {},
+) {
+  return retryAsync(
+    () => extractNotionEventsOnce(url, { headless, minimumNumberedEvents }),
+    {
+      attempts: retryAttempts,
+      delayMs: retryDelayMs,
+      onRetry(error, attempt) {
+        console.warn(
+          `Notion extraction attempt ${attempt} failed: ${error.message}; retrying`,
+        );
+      },
+    },
+  );
 }
