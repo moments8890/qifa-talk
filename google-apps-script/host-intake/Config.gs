@@ -13,5 +13,6 @@ var HOST_INTAKE_CONFIG = Object.freeze({
   operationsLogSheetName: 'Operations Log',
   formResponsesSheetName: 'Form Responses 1',
   holdDays: 7,
+  proposalMonths: 6,
   timeZone: 'America/Los_Angeles',
 });

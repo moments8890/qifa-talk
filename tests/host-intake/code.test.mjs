@@ -169,6 +169,7 @@ function createAppsScriptHarness(options = {}) {
     Session: { getEffectiveUser: () => ({ getEmail: () => 'operator@example.com' }) },
   };
   vm.runInNewContext(source, context);
+  if (!options.rollingDates) context.extendProposedDates_ = () => {};
 
   const makeResponse = (overrides = {}) => {
     const answers = {
@@ -197,6 +198,20 @@ test('provisions form, workbook, properties, and triggers', () => {
   assert.deepEqual(h.triggers.map((value) => value.handler), ['onHostFormSubmit', 'refreshAvailableSundayChoices', 'releaseExpiredHolds']);
   assert.ok(h.createdWorkbooks[0].getSheetByName('Candidates'));
   assert.ok(h.createdWorkbooks[0].getSheetByName('Operations Log'));
+});
+
+test('rolling proposal dates cover six months without reopening existing bookings', () => {
+  const h = createAppsScriptHarness({ rollingDates: true });
+  h.context.setupHostIntake();
+  h.coordination.values.push(['2026-11-01', 'Booked', 'C-booked', '']);
+  const choices = Array.from(h.context.refreshAvailableSundayChoices());
+  assert.equal(choices[0], '2026-10-11（周日）');
+  assert.equal(choices.at(-1), '2027-04-04（周日）');
+  assert.ok(!choices.includes('2026-11-01（周日）'));
+  assert.equal(h.coordination.values.find((row) => row[0] === '2026-11-01')[1], 'Booked');
+  const count = h.coordination.values.length;
+  h.context.refreshAvailableSundayChoices();
+  assert.equal(h.coordination.values.length, count);
 });
 
 test('refuses duplicate provisioning before creating artifacts', () => {

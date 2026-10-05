@@ -38,11 +38,31 @@ function coordinationValues_(sheet) {
 }
 
 function availableSundays_(sheet) {
+  var asOf = Utilities.formatDate(new Date(), HOST_INTAKE_CONFIG.timeZone, 'yyyy-MM-dd');
+  var window = proposedSundays(asOf, HOST_INTAKE_CONFIG.proposalMonths);
   return extractAvailableSundays(coordinationValues_(sheet), {
     dateHeader: HOST_INTAKE_CONFIG.dateHeader,
     statusHeader: HOST_INTAKE_CONFIG.statusHeader,
     availableValues: HOST_INTAKE_CONFIG.availableValues,
-    asOf: Utilities.formatDate(new Date(), HOST_INTAKE_CONFIG.timeZone, 'yyyy-MM-dd'),
+    asOf: asOf,
+    through: window[window.length - 1],
+  });
+}
+
+function extendProposedDates_(sheet) {
+  var values = coordinationValues_(sheet);
+  var headers = values[0].map(normalizedText);
+  var dateIndex = headers.indexOf(HOST_INTAKE_CONFIG.dateHeader);
+  var statusIndex = headers.indexOf(HOST_INTAKE_CONFIG.statusHeader);
+  if (dateIndex < 0 || statusIndex < 0) throw new Error('Coordination date/status headers missing.');
+  var existing = values.slice(1).map(function (row) { return normalizedDate(row[dateIndex]); });
+  var asOf = Utilities.formatDate(new Date(), HOST_INTAKE_CONFIG.timeZone, 'yyyy-MM-dd');
+  proposedSundays(asOf, HOST_INTAKE_CONFIG.proposalMonths).forEach(function (date) {
+    if (existing.indexOf(date) >= 0) return;
+    var row = headers.map(function () { return ''; });
+    row[dateIndex] = date;
+    row[statusIndex] = HOST_INTAKE_CONFIG.availableValues[0];
+    sheet.appendRow(row);
   });
 }
 
@@ -237,6 +257,7 @@ function formAndDefinition_() {
 }
 
 function refreshAvailableSundayChoicesUnlocked_() {
+  extendProposedDates_(getCoordinationSheet_());
   var current = formAndDefinition_();
   var state = buildAvailabilityFormState(current.dates);
   if (!state.acceptingResponses) {
@@ -251,6 +272,7 @@ function refreshAvailableSundayChoicesUnlocked_() {
     .find(function (candidate) { return candidate.getTitle() === field.title; });
   if (!item) throw new Error('Available Sunday question was not found.');
   item.setChoiceValues(field.choices);
+  item.setHelpText(field.helpText);
   current.form.setAcceptingResponses(true);
   return field.choices;
 }
@@ -334,12 +356,7 @@ function onHostFormSubmit(event) {
   try {
     var coordination = getCoordinationSheet_();
     var values = coordinationValues_(coordination);
-    var allowedSundays = extractAvailableSundays(values, {
-      dateHeader: HOST_INTAKE_CONFIG.dateHeader,
-      statusHeader: HOST_INTAKE_CONFIG.statusHeader,
-      availableValues: HOST_INTAKE_CONFIG.availableValues,
-      asOf: Utilities.formatDate(new Date(), HOST_INTAKE_CONFIG.timeZone, 'yyyy-MM-dd'),
-    });
+    var allowedSundays = availableSundays_(coordination);
     var definition = buildHostFormDefinition(allowedSundays);
     var candidateId = 'C-' + Utilities.getUuid();
     var candidate = normalizeCandidateSubmission(

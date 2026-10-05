@@ -11,6 +11,15 @@ function loadCore() {
   return context;
 }
 
+test('proposes Sundays through six calendar months and excludes today', () => {
+  const { proposedSundays } = loadCore();
+  const dates = Array.from(proposedSundays('2026-10-04', 6));
+  assert.equal(dates.length, 26);
+  assert.equal(dates[0], '2026-10-11');
+  assert.equal(dates.at(-1), '2027-04-04');
+  assert.equal(Array.from(proposedSundays('2026-08-31', 6)).at(-1), '2027-02-28');
+});
+
 test('selects only future available Sundays by configured header names', () => {
   const { extractAvailableSundays } = loadCore();
   assert.equal(typeof extractAvailableSundays, 'function');

@@ -21,6 +21,26 @@ function isSunday(date) {
     && new Date(date + 'T00:00:00Z').getUTCDay() === 0;
 }
 
+function proposedSundays(asOf, months) {
+  var start = new Date(asOf + 'T00:00:00Z');
+  if (!Number.isFinite(start.getTime()) || !Number.isInteger(months) || months < 1) {
+    throw new Error('A valid date and positive proposal month count are required.');
+  }
+  var end = new Date(start.getTime());
+  var day = end.getUTCDate();
+  end.setUTCDate(1);
+  end.setUTCMonth(end.getUTCMonth() + months);
+  var lastDay = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, 0)).getUTCDate();
+  end.setUTCDate(Math.min(day, lastDay));
+  var dates = [];
+  // Start with the next Sunday, leaving no same-day booking option.
+  start.setUTCDate(start.getUTCDate() + (7 - start.getUTCDay()));
+  for (; start <= end; start.setUTCDate(start.getUTCDate() + 7)) {
+    dates.push(start.toISOString().slice(0, 10));
+  }
+  return dates;
+}
+
 function extractAvailableSundays(values, options) {
   if (!Array.isArray(values) || values.length === 0) return [];
   var headers = values[0].map(normalizedText);
@@ -34,7 +54,8 @@ function extractAvailableSundays(values, options) {
   var dates = values.slice(1).flatMap(function (row) {
     var date = normalizedDate(row[dateIndex]);
     var status = normalizedText(row[statusIndex]).toLocaleLowerCase();
-    if (!isSunday(date) || date < options.asOf || allowedStatuses.indexOf(status) < 0) {
+    if (!isSunday(date) || date <= options.asOf ||
+        (options.through && date > options.through) || allowedStatuses.indexOf(status) < 0) {
       return [];
     }
     return [date];
@@ -61,7 +82,7 @@ function buildHostFormDefinition(availableSundays) {
       {
         key: 'requestedSunday',
         title: '可选活动日期',
-        helpText: '请选择目前开放的周日。提交后该日期进入临时保留，最终以运营确认为准。',
+        helpText: '请选择未来六个月内开放的周日。提交后临时保留活动日期；运营确认活动后再预约图书馆，最终日期及场地以运营确认为准。',
         type: 'multipleChoice',
         required: true,
         choices: availableSundays.map(function (date) { return date + '（周日）'; }),
