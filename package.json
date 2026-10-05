@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/notion-sync/*.test.mjs",
+    "test": "node --test tests/notion-sync/*.test.mjs tests/host-intake/*.test.mjs",
     "sync:notion": "node scripts/notion-sync/sync.mjs"
   },
   "devDependencies": {

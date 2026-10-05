@@ -57,10 +57,10 @@ npm run sync:notion -- --write --adopt-existing
 
 海报目前仍由运营制作并上传到 Notion。同步程序从每个活动自己的内容范围提取海报，下载并统一生成优化后的 JPEG；除已确认在源页面中没有海报块的活动 001、002、003、004、038、048、066 外，缺失、无效或非 Notion 图片会让同步失败，避免官网悄悄发布没有海报的活动。页面按活动编号自动使用对应的 `assets/images/NNN.jpg`；运营日后在 Notion 补上这些图片后，同步会自动生成它们。海报自动生成留待后续阶段。
 
-## 后续：主持人输入
+## 主持人候选活动表单
 
-Notion 同步是过渡方案。后续将以主持人提交的候选活动为输入，并由运营确认后才公开发布。已确认的要求和数据流记录在：
+Notion 同步仍是官网内容的过渡来源。主持人候选活动通过私密 Google Form 提交，并由运营确认后才公开发布；表单提交本身不会修改官网。Apps Script 源码、安装步骤和运营说明见：
 
-- `docs/superpowers/specs/2026-10-03-host-intake-content-sync-design.md`
+- [`google-apps-script/host-intake/README.md`](google-apps-script/host-intake/README.md)
 
 主持人表单将收集可选周日、短标题、可选简介、微信号和邮箱；时间默认下午 2–5 点、地点默认 Bellevue Library、容量默认 16、活动类型目前仅为“科普 / 分享”，并保留可选的“其他说明”。微信号和邮箱仅供预约及运营联系，不公开到网站。
