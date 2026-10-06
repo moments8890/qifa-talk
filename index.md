@@ -46,65 +46,81 @@ permalink: /
   }
 </style>
 
-{% assign next_event = site.pages | where: "parent", "即将开始" | sort: "nav_order" | first %}
+{% assign all_upcoming = site.pages | where: "parent", "即将开始" | sort: "nav_order" %}
+{% assign first_upcoming = all_upcoming | first %}
+{% capture selected_week %}{% include event-week.html date=first_upcoming.event_date %}{% endcapture %}
+{% assign selected_week = selected_week | strip %}
+{% assign current_week = site.time | date: "%G-%V" %}
+{% assign featured_count = 0 %}
 
-{% if next_event %}
+{% if first_upcoming %}
+{% for event in all_upcoming %}
+{% capture event_week %}{% include event-week.html date=event.event_date %}{% endcapture %}
+{% assign event_week = event_week | strip %}
+{% if event_week == selected_week %}
+{% assign featured_count = featured_count | plus: 1 %}
 <div class="card" style="border-radius:16px;padding:20px 24px;margin-bottom:1.5rem;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
     <div style="display:flex;align-items:center;gap:6px;">
-      <span style="background:#ef4444;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">🔥 最新活动</span>
-      {% if next_event.event_type %}<span style="background:#eef2ff;color:#4f46e5;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:999px;">{{ next_event.event_type }}</span>{% endif %}
+      <span style="background:#ef4444;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">🔥 {% if selected_week == current_week %}本周活动{% else %}下期活动{% endif %}</span>
+      {% if event.event_type %}<span style="background:#eef2ff;color:#4f46e5;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:999px;">{{ event.event_type }}</span>{% endif %}
     </div>
-    <a href="{{ next_event.url | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#eef2ff;border-radius:999px;text-decoration:none;color:#4f46e5;font-size:1rem;" onmouseover="this.style.background='#c7d2fe'" onmouseout="this.style.background='#eef2ff'">→</a>
+    <a href="{{ event.url | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#eef2ff;border-radius:999px;text-decoration:none;color:#4f46e5;font-size:1rem;" onmouseover="this.style.background='#c7d2fe'" onmouseout="this.style.background='#eef2ff'">→</a>
   </div>
   <div class="event-card-body">
     <div class="event-card-text">
       <div style="font-size:1.1rem;font-weight:700;margin-bottom:12px;">
-        <a href="{{ next_event.url | relative_url }}" class="event-title-link">{{ next_event.title }} <span class="event-title-arrow">↗</span></a>
+        <a href="{{ event.url | relative_url }}" class="event-title-link">{{ event.title }} <span class="event-title-arrow">↗</span></a>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        {% if next_event.event_date %}
+        {% if event.event_date %}
         <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#6b7280;">
-          <span>📅</span><span>{{ next_event.event_date }}</span>
+          <span>📅</span><span>{{ event.event_date }}</span>
         </div>
         {% endif %}
-        {% if next_event.location %}
+        {% if event.location %}
         <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#6b7280;">
-          <span>📍</span><span>{{ next_event.location }}</span>
+          <span>📍</span><span>{{ event.location }}</span>
         </div>
         {% endif %}
-        {% if next_event.host %}
+        {% if event.host %}
         <div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#6b7280;">
-          <span>🎤</span><span>Host：{{ next_event.host }}</span>
+          <span>🎤</span><span>Host：{{ event.host }}</span>
         </div>
         {% endif %}
-        {% if next_event.description %}
+        {% if event.description %}
         <div style="margin-top:8px;padding:10px 12px;background:#f5f3ff;border-left:3px solid #a5b4fc;border-radius:0 8px 8px 0;font-size:0.85rem;color:#4b5563;line-height:1.6;">
-          💡 {{ next_event.description }}
+          💡 {{ event.description }}
         </div>
         {% endif %}
       </div>
     </div>
-    {% assign img_num = next_event.nav_order | prepend: "00" | slice: -3, 3 %}
-    <img src="{{ '/assets/images/' | append: img_num | append: '.jpg' | relative_url }}" alt="{{ next_event.title }}"
+    {% assign img_num = event.nav_order | prepend: "00" | slice: -3, 3 %}
+    <img src="{{ '/assets/images/' | append: img_num | append: '.jpg' | relative_url }}" alt="{{ event.title }}"
          onerror="this.style.display='none'"
          class="event-card-img">
   </div>
 </div>
+{% endif %}
+{% endfor %}
 {% else %}
 <div class="card" style="margin-bottom:1.5rem;text-align:center;color:#9ca3af;font-style:italic;">暂无即将开始的活动，敬请期待！</div>
 {% endif %}
 
-{% assign all_upcoming = site.pages | where: "parent", "即将开始" | sort: "nav_order" %}
-{% if all_upcoming.size > 1 %}
+{% assign later_event_count = all_upcoming.size | minus: featured_count %}
+{% if later_event_count > 0 %}
 <div style="margin-bottom:2rem;">
   <div class="section-label">🙌 即将开始</div>
   <div style="display:flex;flex-direction:column;gap:8px;">
-  {% for event in all_upcoming offset:1 %}
+  {% for event in all_upcoming %}
+  {% capture event_week %}{% include event-week.html date=event.event_date %}{% endcapture %}
+  {% assign event_week = event_week | strip %}
+  {% unless event_week == selected_week %}
   <a href="{{ event.url | relative_url }}" class="card-btn" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;">
     <span class="card-title" style="margin-bottom:0;">{{ event.title }}</span>
     <span style="font-size:0.8rem;color:#9ca3af;white-space:nowrap;margin-left:12px;">{{ event.event_date }}</span>
   </a>
+  {% endunless %}
   {% endfor %}
   </div>
   <a href="{{ '/upcoming/' | relative_url }}" class="btn-outline" style="margin-top:12px;font-size:0.85rem;padding:7px 20px;">查看全部活动 →</a>

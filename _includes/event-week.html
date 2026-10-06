@@ -1,0 +1,5 @@
+{%- assign date_parts = include.date | split: "/" -%}
+{%- assign month = date_parts[0] | prepend: "0" | slice: -2, 2 -%}
+{%- assign day = date_parts[1] | prepend: "0" | slice: -2, 2 -%}
+{%- capture date_iso -%}{{ date_parts[2] }}-{{ month }}-{{ day }}{%- endcapture -%}
+{{- date_iso | date: "%G-%V" -}}
