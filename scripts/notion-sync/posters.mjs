@@ -2,7 +2,10 @@ import sharp from 'sharp';
 import { retryAsync } from './extract.mjs';
 
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
-const VERIFIED_EVENTS_WITHOUT_POSTERS = new Set([1, 2, 3, 4, 38, 48, 66]);
+const VERIFIED_EVENTS_WITHOUT_POSTERS = new Set([1, 2, 3, 4, 38, 48]);
+const VERIFIED_BLOCKS_WITHOUT_POSTERS = new Set([
+  '3c826081-2fe7-80b7-8d88-c490ba1bfb32',
+]);
 const NOTION_IMAGE_HOSTS = new Set([
   'zhz1208.notion.site',
   'www.notion.so',
@@ -117,7 +120,9 @@ export async function downloadPosters(
   { fetchImpl = fetch, concurrency = 4 } = {},
 ) {
   for (const event of events) {
-    if (!event.posterUrl && !VERIFIED_EVENTS_WITHOUT_POSTERS.has(event.number)) {
+    if (!event.posterUrl
+      && !VERIFIED_EVENTS_WITHOUT_POSTERS.has(event.number)
+      && !VERIFIED_BLOCKS_WITHOUT_POSTERS.has(event.sourceBlockId)) {
       throw new Error(
         `event ${String(event.number).padStart(3, '0')} has no Notion poster`,
       );

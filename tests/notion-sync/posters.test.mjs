@@ -104,14 +104,22 @@ test('fails closed when any event has no poster', async () => {
   );
 });
 
-test('allows exactly the seven verified events without Notion posters', async () => {
-  for (const number of [1, 2, 3, 4, 38, 48, 66]) {
+test('allows verified historical gaps and the renumbered placeholder block', async () => {
+  for (const number of [1, 2, 3, 4, 38, 48]) {
     await assert.doesNotReject(
       downloadPosters([{ number, title: 'Verified gap', posterUrl: '' }]),
     );
   }
 
-  for (const number of [5, 37, 39, 47, 49, 65, 67]) {
+  for (const number of [66, 67]) {
+    await assert.doesNotReject(downloadPosters([{
+      number,
+      sourceBlockId: '3c826081-2fe7-80b7-8d88-c490ba1bfb32',
+      posterUrl: '',
+    }]));
+  }
+
+  for (const number of [5, 37, 39, 47, 49, 65, 66, 67]) {
     await assert.rejects(
       downloadPosters([{ number, title: 'Not exempt', posterUrl: '' }]),
       new RegExp(`event ${String(number).padStart(3, '0')} has no Notion poster`, 'u'),
