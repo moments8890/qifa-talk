@@ -1,0 +1,50 @@
+{% assign english = false %}{% if page.lang == 'en' %}{% assign english = true %}{% endif %}
+<nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm" aria-label="{% if english %}Main navigation{% else %}主导航{% endif %}">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="flex justify-between items-center h-14 gap-3">
+      {% include site-brand-header.html %}
+      <div class="hidden lg:flex items-center gap-4 text-sm font-medium text-gray-600">
+        <a href="{{ '/' | locale_url }}" class="hover:text-indigo-600">{{ '首页' | localize }}</a>
+        <a href="{{ '/upcoming/' | locale_url }}" class="hover:text-indigo-600">{{ '即将开始' | localize }}</a>
+        <a href="{{ '/past/' | locale_url }}" class="hover:text-indigo-600">{{ '往期活动' | localize }}</a>
+        <a href="{{ '/about/' | locale_url }}" class="hover:text-indigo-600">{{ '关于我们' | localize }}</a>
+        <div class="relative group">
+          <button class="hover:text-indigo-600 flex items-center gap-1">{{ '工具' | localize }} <span aria-hidden="true">▾</span></button>
+          <div class="absolute top-full left-1/2 -translate-x-1/2 w-40 pt-2 hidden group-hover:block group-focus-within:block">
+            <div class="bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+              <a href="{{ '/timer/' | locale_url }}" class="block px-3 py-2 hover:bg-gray-50">{{ '计时器' | localize }}</a>
+              <a href="{{ '/handsup/' | locale_url }}" class="block px-3 py-2 hover:bg-gray-50">{{ '举手队列' | localize }}</a>
+            </div>
+          </div>
+        </div>
+        <a href="{{ '/join/' | locale_url }}" class="bg-indigo-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-indigo-700">{{ '如何加入' | localize }}</a>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="language-switch flex border border-gray-200 rounded-md overflow-hidden text-xs font-semibold" role="group" aria-label="{% if english %}Language{% else %}语言{% endif %}">
+          <a href="{{ page.english_url | relative_url }}" lang="en" hreflang="en" data-language="en" class="px-2 py-2 {% if english %}bg-indigo-600 text-white{% else %}text-gray-600 hover:bg-gray-100{% endif %}" {% if english %}aria-current="page"{% endif %}>EN</a>
+          <a href="{{ page.chinese_url | relative_url }}" lang="zh-CN" hreflang="zh-CN" data-language="zh" class="px-2 py-2 {% unless english %}bg-indigo-600 text-white{% else %}text-gray-600 hover:bg-gray-100{% endunless %}" {% unless english %}aria-current="page"{% endunless %}>中文</a>
+        </div>
+        <button id="menu-btn" class="lg:hidden p-1 text-gray-500" aria-label="{% if english %}Menu{% else %}菜单{% endif %}" aria-expanded="false" aria-controls="mobile-nav">
+          <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-nav" class="hidden pb-4 lg:hidden border-t border-gray-100 pt-2 space-y-1">
+      {% assign routes = '/,/upcoming/,/past/,/about/,/timer/,/handsup/,/join/' | split: ',' %}
+      {% assign labels = '首页,即将开始,往期活动,关于我们,计时器,举手队列,如何加入' | split: ',' %}
+      {% for route in routes %}<a href="{{ route | locale_url }}" class="block px-3 py-2 rounded-md text-gray-600 hover:bg-gray-100">{{ labels[forloop.index0] | localize }}</a>{% endfor %}
+    </div>
+  </div>
+</nav>
+<script>
+  document.querySelectorAll('[data-language]').forEach(link => {
+    const target = new URL(link.href);
+    target.search = location.search;
+    target.hash = location.hash;
+    link.href = target.href;
+  });
+  document.getElementById('menu-btn').addEventListener('click', function () {
+    this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+  });
+</script>

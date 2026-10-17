@@ -30,11 +30,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          source: ./
-          destination: ./_site
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Build with Jekyll
+        run: bundle exec jekyll build
+      - name: Verify bilingual pages and site contracts
+        run: |
+          bundle exec ruby test/bilingual_test.rb
+          bundle exec ruby test/logo_system_test.rb
+          bundle exec ruby test/wechat_join_test.rb
+          bundle exec ruby test/weekly_upcoming_test.rb
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

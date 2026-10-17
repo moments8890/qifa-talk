@@ -65,12 +65,12 @@ permalink: /
       <span style="background:#ef4444;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">🔥 {% if selected_week == current_week %}本周活动{% else %}下期活动{% endif %}</span>
       {% if event.event_type %}<span style="background:#eef2ff;color:#4f46e5;font-size:0.7rem;font-weight:600;padding:3px 10px;border-radius:999px;">{{ event.event_type }}</span>{% endif %}
     </div>
-    <a href="{{ event.url | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#eef2ff;border-radius:999px;text-decoration:none;color:#4f46e5;font-size:1rem;" onmouseover="this.style.background='#c7d2fe'" onmouseout="this.style.background='#eef2ff'">→</a>
+    <a href="{{ event.url | locale_url }}" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:#eef2ff;border-radius:999px;text-decoration:none;color:#4f46e5;font-size:1rem;" onmouseover="this.style.background='#c7d2fe'" onmouseout="this.style.background='#eef2ff'">→</a>
   </div>
   <div class="event-card-body">
     <div class="event-card-text">
       <div style="font-size:1.1rem;font-weight:700;margin-bottom:12px;">
-        <a href="{{ event.url | relative_url }}" class="event-title-link">{{ event.title }} <span class="event-title-arrow">↗</span></a>
+        <a href="{{ event.url | locale_url }}" class="event-title-link">{{ event.title }} <span class="event-title-arrow">↗</span></a>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
         {% if event.event_date %}
@@ -96,7 +96,7 @@ permalink: /
       </div>
     </div>
     {% assign img_num = event.nav_order | prepend: "00" | slice: -3, 3 %}
-    <img src="{{ '/assets/images/' | append: img_num | append: '.jpg' | relative_url }}" alt="{{ event.title }}"
+    <img src="{{ '/assets/images/' | append: img_num | append: '.jpg' | locale_url }}" alt="{{ event.title }}"
          onerror="this.style.display='none'"
          class="event-card-img">
   </div>
@@ -116,21 +116,21 @@ permalink: /
   {% capture event_week %}{% include event-week.html date=event.event_date %}{% endcapture %}
   {% assign event_week = event_week | strip %}
   {% unless event_week == selected_week %}
-  <a href="{{ event.url | relative_url }}" class="card-btn" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;">
+  <a href="{{ event.url | locale_url }}" class="card-btn" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;">
     <span class="card-title" style="margin-bottom:0;">{{ event.title }}</span>
     <span style="font-size:0.8rem;color:#9ca3af;white-space:nowrap;margin-left:12px;">{{ event.event_date }}</span>
   </a>
   {% endunless %}
   {% endfor %}
   </div>
-  <a href="{{ '/upcoming/' | relative_url }}" class="btn-outline" style="margin-top:12px;font-size:0.85rem;padding:7px 20px;">查看全部活动 →</a>
+  <a href="{{ '/upcoming/' | locale_url }}" class="btn-outline" style="margin-top:12px;font-size:0.85rem;padding:7px 20px;">查看全部活动 →</a>
 </div>
 {% endif %}
 
 <div class="section-header"><div class="section-header-line"></div><div class="section-header-text">📣 如何参与</div><div class="section-header-line"></div></div>
 
 <div class="grid-2">
-  <a href="{{ '/join/' | relative_url }}" class="card-btn">
+  <a href="{{ '/join/' | locale_url }}" class="card-btn">
     <div class="card-icon">💬</div>
     <div class="card-title">加入微信群</div>
     <div class="card-desc">扫描二维码加入启发说</div>
@@ -145,7 +145,7 @@ permalink: /
     <div class="card-title">提前做功课</div>
     <div class="card-desc">了解话题，准备你的观点</div>
   </div>
-  <a href="{{ '/poll/' | relative_url }}" class="card-btn">
+  <a href="{{ '/poll/' | locale_url }}" class="card-btn">
     <span class="badge">投票 →</span>
     <div class="card-icon">🎤</div>
     <div class="card-title">带着观点来！</div>
@@ -181,22 +181,22 @@ permalink: /
 <div class="section-header"><div class="section-header-line"></div><div class="section-header-text">🔗 快速导航</div><div class="section-header-line"></div></div>
 
 <div class="grid-2">
-  <a href="{{ '/upcoming/' | relative_url }}" class="card-btn" style="text-align:center;">
+  <a href="{{ '/upcoming/' | locale_url }}" class="card-btn" style="text-align:center;">
     <div class="card-icon">🙌</div>
     <div class="card-title" style="margin-bottom:2px;">即将开始</div>
     <div class="card-desc">最新活动</div>
   </a>
-  <a href="{{ '/past/' | relative_url }}" class="card-btn" style="text-align:center;">
+  <a href="{{ '/past/' | locale_url }}" class="card-btn" style="text-align:center;">
     <div class="card-icon">📅</div>
     <div class="card-title" style="margin-bottom:2px;">往期活动</div>
     <div class="card-desc">历届回顾</div>
   </a>
-  <a href="{{ '/about/' | relative_url }}" class="card-btn" style="text-align:center;">
+  <a href="{{ '/about/' | locale_url }}" class="card-btn" style="text-align:center;">
     <div class="card-icon">💡</div>
     <div class="card-title" style="margin-bottom:2px;">关于我们</div>
     <div class="card-desc">未来规划</div>
   </a>
-  <a href="{{ '/join/' | relative_url }}" class="card-btn" style="text-align:center;">
+  <a href="{{ '/join/' | locale_url }}" class="card-btn" style="text-align:center;">
     <div class="card-icon">🤝</div>
     <div class="card-title" style="margin-bottom:2px;">如何加入</div>
     <div class="card-desc">加入我们</div>

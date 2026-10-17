@@ -16,7 +16,7 @@ permalink: /join/
 
 {::nomarkdown}
 <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:16px;padding:24px;text-align:center;margin:1rem 0;">
-  <img src="{{ '/assets/images/qifa-talk-wechat-qr.png' | relative_url }}" alt="启发说小助手个人微信二维码" style="display:block;width:100%;max-width:320px;height:auto;margin:0 auto 18px;border-radius:12px;">
+  <img src="{{ '/assets/images/qifa-talk-wechat-qr.png' | locale_url }}" alt="启发说小助手个人微信二维码" style="display:block;width:100%;max-width:320px;height:auto;margin:0 auto 18px;border-radius:12px;">
   <div style="font-size:1.05rem;font-weight:700;color:#166534;margin-bottom:6px;">打开微信扫一扫</div>
   <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:0.9rem;color:#4b5563;line-height:1.6;">
     <span style="background:#dcfce7;border-radius:999px;padding:5px 12px;font-weight:600;color:#166534;">① 添加小助手</span>
@@ -40,7 +40,7 @@ permalink: /join/
 
 {::nomarkdown}
 <div style="margin:1.25rem 0 0.5rem;">
-  <a href="{{ '/upcoming/' | relative_url }}" style="display:inline-flex;align-items:center;justify-content:center;background:#4f46e5;color:#fff;text-decoration:none;font-weight:700;font-size:0.95rem;padding:10px 22px;border-radius:999px;box-shadow:0 4px 12px rgba(79,70,229,0.22);">查看近期活动 →</a>
+  <a href="{{ '/upcoming/' | locale_url }}" style="display:inline-flex;align-items:center;justify-content:center;background:#4f46e5;color:#fff;text-decoration:none;font-weight:700;font-size:0.95rem;padding:10px 22px;border-radius:999px;box-shadow:0 4px 12px rgba(79,70,229,0.22);">查看近期活动 →</a>
 </div>
 {:/nomarkdown}
 

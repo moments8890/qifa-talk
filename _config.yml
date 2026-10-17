@@ -7,3 +7,13 @@ description: 启发思维，共话未来 — 西雅图华人辩论与讨论社�
 markdown: kramdown
 kramdown:
   input: GFM
+
+exclude:
+  - node_modules
+  - scripts
+  - test
+  - tests
+  - google-apps-script
+  - task_plan.md
+  - findings.md
+  - progress.md

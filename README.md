@@ -64,3 +64,21 @@ Notion 同步仍是官网内容的过渡来源。主持人候选活动通过私�
 - [`google-apps-script/host-intake/README.md`](google-apps-script/host-intake/README.md)
 
 主持人表单将收集可选周日、短标题、可选简介、微信号和邮箱；时间默认下午 2–5 点、地点默认 Bellevue Library、容量默认 16、活动类型目前仅为“科普 / 分享”，并保留可选的“其他说明”。微信号和邮箱仅供预约及运营联系，不公开到网站。
+
+## English and Chinese Pages
+
+The Chinese site remains at `/`; English pages are generated at `/en/` during
+each Jekyll build. The top-right language switch opens the equivalent page and
+preserves query parameters and fragments, including hand-raising session codes.
+
+Translations live in `_data/english.json` (shared labels and tool messages),
+`_data/event_translations.json` (event text), and `_translations/` (long-form
+pages). Keep translation keys equal to the Chinese source text. When Notion
+introduces or changes event text, add its English translation to the catalogue;
+event numbering, dates, posters, and upcoming/past moves are shared automatically.
+Poster artwork, the WeChat QR code, and externally hosted resources remain in
+their original language.
+
+Verify the generated site with `bundle exec jekyll build` followed by
+`bundle exec ruby test/bilingual_test.rb`. The coverage check reports missing
+English text and broken internal links before publication.
