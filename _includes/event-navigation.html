@@ -1,0 +1,36 @@
+{% if page.nav_order and page.parent %}
+  {% assign event_list = site.pages | where: "parent", page.parent | sort: "nav_order" %}
+  {% assign past_parent = '往期活动' | localize %}
+  {% if page.parent == past_parent %}{% assign event_list = event_list | reverse %}{% endif %}
+  {% assign previous_event = nil %}
+  {% assign next_event = nil %}
+  {% for event in event_list %}
+    {% if event.url == page.url %}
+      {% unless forloop.first %}
+        {% assign previous_index = forloop.index0 | minus: 1 %}
+        {% assign previous_event = event_list[previous_index] %}
+      {% endunless %}
+      {% unless forloop.last %}
+        {% assign next_index = forloop.index0 | plus: 1 %}
+        {% assign next_event = event_list[next_index] %}
+      {% endunless %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {% if previous_event or next_event %}
+  <nav class="event-navigation grid grid-cols-2 gap-6 border-t border-gray-200 mt-10 pt-6" aria-label="{{ '活动导航' | localize }}">
+    {% if previous_event %}
+    <a href="{{ previous_event.url | locale_url }}" rel="prev" class="min-w-0 text-indigo-700 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+      <span class="block text-sm text-gray-500 mb-2"><span aria-hidden="true">←</span> {{ '上一个活动' | localize }}</span>
+      <span class="block text-sm font-semibold break-words">{{ previous_event.title | escape }}</span>
+    </a>
+    {% endif %}
+    {% if next_event %}
+    <a href="{{ next_event.url | locale_url }}" rel="next" class="col-start-2 min-w-0 text-right text-indigo-700 hover:text-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+      <span class="block text-sm text-gray-500 mb-2">{{ '下一个活动' | localize }} <span aria-hidden="true">→</span></span>
+      <span class="block text-sm font-semibold break-words">{{ next_event.title | escape }}</span>
+    </a>
+    {% endif %}
+  </nav>
+  {% endif %}
+{% endif %}

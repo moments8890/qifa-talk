@@ -40,6 +40,7 @@ jobs:
       - name: Verify bilingual pages and site contracts
         run: |
           bundle exec ruby test/bilingual_test.rb
+          bundle exec ruby test/event_navigation_test.rb
           bundle exec ruby test/logo_system_test.rb
           bundle exec ruby test/wechat_join_test.rb
           bundle exec ruby test/weekly_upcoming_test.rb
